@@ -1,4 +1,4 @@
-name: Build Aroma diagnostic plugin
+name: Build zShop Aroma plugin (experimental)
 
 on:
   push:
@@ -23,17 +23,17 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build pinned Wii U toolchain
         run: docker build --file plugin/Dockerfile --tag zshop-wups-builder plugin
-      - name: Compile WUPS diagnostic
+      - name: Compile WUPS experimental DNS routing plugin
         run: docker run --rm -v "${PWD}/plugin:/project" zshop-wups-builder make
-      - name: Check produced artifact
+      - name: Check produced PowerPC artifact
         run: |
           test -s plugin/zShop.wps
-          file plugin/zShop.wps
+          file plugin/zShop.wps | grep 'ELF 32-bit MSB'
           sha256sum plugin/zShop.wps
-      - name: Upload unsigned diagnostic WPS (NOT release)
+      - name: Upload experimental WPS (NOT stable release)
         uses: actions/upload-artifact@v4
         with:
-          name: zShop-phase1-diagnostic-wps
+          name: zShop-v0.2.0-inkay-stock-lan-alpha
           path: plugin/zShop.wps
           if-no-files-found: error
           retention-days: 14
