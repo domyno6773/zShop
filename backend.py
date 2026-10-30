@@ -157,7 +157,7 @@ def make_handler(catalog, geisha=None):
             self.send_header("X-Content-Type-Options", "nosniff")
             if geisha is not None:
                 self.send_header("Content-Security-Policy",
-                                 "default-src 'self'; script-src 'none'; "
+                                 "default-src 'self'; script-src 'self'; "
                                  "connect-src 'none'; form-action 'none'; "
                                  "object-src 'none'; frame-src 'none'; "
                                  "img-src 'self' data:; style-src 'self' 'unsafe-inline'")
