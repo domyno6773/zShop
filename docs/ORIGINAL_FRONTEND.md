@@ -32,3 +32,11 @@ Il falso frontend HTML/CSS personalizzato introdotto in Fase 2 è stato rimosso 
 NON sollecitare certificati client Wii U, chiavi, credenziali o token; NON pubblicare file originali Nintendo senza autorizzazione.
 
 Stato: ricerca e recupero del vero frontend non ancora conclusi.
+
+## Inventario offline di un backup locale
+
+Per valutare un'eventuale copia delle risorse Geisha in possesso dell'utente:
+
+    python tools/inspect_geisha_archive.py "C:\\percorso\\al\\backup"
+
+Lo strumento non scarica né esegue materiale Nintendo e non necessita di certificati o credenziali. Legge pagine HTML e CSS, censisce link a risorse mancanti e domini esterni; non prova la completezza dell'applicazione, il funzionamento sul GamePad o la provenienza legittima dei file.
