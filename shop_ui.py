@@ -223,16 +223,16 @@ def profile():
     ) % (safe(link("home")), safe(link("all")))
 
 
-def sidebar(view):
+def sidebar(view, frm='all'):
     home_active = ' class="selected"' if view == "home" else ""
     profile_active = ' class="selected"' if view == "profile" else ""
     search_active = ' class="selected"' if view == "search" else ""
-    fallback = "all" if view == "detail" else "home"
+    fallback = (frm if frm in VIEWS and frm != "detail" else "all") if view == "detail" else "home"
     return (
         '<aside class="side-menu" aria-label="Menu principale">'
         '<a href="%s"%s><span class="side-icon side-home">⌂</span>'
         '<span>Home</span><small>X</small></a>'
-        '<a href="%s"%s><span class="side-icon side-person">◉</span>'
+        '<a href="%s"%s title="My Profile"><span class="side-icon side-person">◉</span>'
         '<span>Il mio menu</span><small>Y</small></a>'
         '<div class="side-static"><span class="side-icon side-wallet">▣</span>'
         '<span>Anteprima</span><small>—</small></div>'
@@ -299,4 +299,4 @@ def render_page(view, catalog, query="", title_id="", frm="all"):
         '<span>Download e acquisti disattivati</span></footer></div></div>'
         '<script type="text/javascript" src="/static/shop.js"></script>'
         '</body></html>'
-    ) % (safe(page_title), safe(view), sidebar(view), topbar(view), content)
+    ) % (safe(page_title), safe(view), sidebar(view, frm), topbar(view), content)

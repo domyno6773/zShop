@@ -42,7 +42,7 @@ a:focus,a:active,button:focus{outline:3px solid #f4a72b;outline-offset:1px}
 .banner-bag{display:block;margin:34px auto 0;width:53px;height:48px;border:5px solid #eda11e;border-radius:10px;background:#ffd58c}
 .banner-bag:before{content:"";display:block;width:21px;height:17px;position:relative;top:-17px;left:10px;border:5px solid #eda11e;border-bottom:0;border-radius:12px 12px 0 0}
 .category-strip{margin:0 -5px 17px;overflow:hidden}
-.category-box{display:inline-block;vertical-align:top;position:relative;background:#fff;color:#49575b;min-height:85px;width:calc(25% - 10px);margin:0 5px 8px;padding:18px 12px 11px 17px;border:1px solid #cdd4d5;border-top:5px solid #22a7c1;border-radius:7px;box-shadow:0 2px 0 #d5d9da}
+.category-box{display:inline-block;vertical-align:top;position:relative;background:#fff;color:#49575b;min-height:85px;width:23.3%;margin:0 5px 8px;padding:18px 12px 11px 17px;border:1px solid #cdd4d5;border-top:5px solid #22a7c1;border-radius:7px;box-shadow:0 2px 0 #d5d9da}
 .category-box.category-mario{border-top-color:#df565b}
 .category-box.category-new{border-top-color:#e3a337}
 .category-box.category-best{border-top-color:#6eac66}
@@ -56,7 +56,7 @@ a:focus,a:active,button:focus{outline:3px solid #f4a72b;outline-offset:1px}
 .more-link{position:absolute;right:3px;top:8px;font-size:13px;font-weight:bold;color:#148da7}
 .more-link b{font-size:20px;vertical-align:middle}
 .game-grid{margin:0 -5px;overflow:hidden}
-.game-tile{display:inline-block;vertical-align:top;width:calc(25% - 10px);min-height:189px;margin:0 5px 12px;background:#fff;border-radius:9px;border:1px solid #cbd0d1;box-shadow:0 2px 0 #d6d8d8;color:#4b5457;overflow:hidden;padding:8px}
+.game-tile{display:inline-block;vertical-align:top;width:23.3%;min-height:189px;margin:0 5px 12px;background:#fff;border-radius:9px;border:1px solid #cbd0d1;box-shadow:0 2px 0 #d6d8d8;color:#4b5457;overflow:hidden;padding:8px}
 .game-tile:focus,.game-tile:hover{border-color:#e8a12f;box-shadow:0 0 0 3px #f7d99e}
 .game-tile .cover{width:100%;height:112px;margin:0 auto}
 .cover{position:relative;overflow:hidden;background:#5bb1c9;border:1px solid rgba(0,0,0,.08);border-radius:6px;color:#fff}
@@ -113,7 +113,7 @@ a:focus,a:active,button:focus{outline:3px solid #f4a72b;outline-offset:1px}
 .profile-copy h2{margin:8px 0 10px;font-size:20px}
 .profile-copy p{margin:5px 0;font-size:14px;color:#7c8588}
 .profile-links{margin:19px -5px;overflow:hidden}
-.profile-links a{display:inline-block;position:relative;width:calc(50% - 10px);margin:0 5px 10px;padding:18px;background:#fff;border:1px solid #cbd3d4;border-radius:8px;font-weight:bold;color:#328aa4}
+.profile-links a{display:inline-block;position:relative;width:48.1%;margin:0 5px 10px;padding:18px;background:#fff;border:1px solid #cbd3d4;border-radius:8px;font-weight:bold;color:#328aa4}
 .profile-links b{float:right;font-size:22px}
 .footer{border-top:1px solid #cbd1d1;padding:12px 24px 15px;font-size:10px;color:#929a9c;overflow:hidden}
 .footer span:last-child{float:right}
@@ -146,8 +146,8 @@ a:focus,a:active,button:focus{outline:3px solid #f4a72b;outline-offset:1px}
 .banner-disc{left:0;top:55px}
 .home-banner h1{font-size:22px}
 .home-banner p{font-size:12px}
-.category-box{width:calc(50% - 10px);min-height:75px}
-.game-tile{width:calc(50% - 10px)}
+.category-box{width:48.1%;min-height:75px}
+.game-tile{width:48.1%}
 .detail-cover{width:36%}
 .detail-info{width:64%;padding:17px}
 .detail-info h1{font-size:21px}
@@ -155,7 +155,7 @@ a:focus,a:active,button:focus{outline:3px solid #f4a72b;outline-offset:1px}
 @media(max-width:440px){
 .top-tabs a{min-width:40px;padding:20px 3px;font-size:9px}
 .shop-brand{width:98px}
-.category-box{width:calc(50% - 10px)}
+.category-box{width:48.1%}
 .detail-cover,.detail-info{float:none;width:100%}
 .detail-cover{padding:0 0 12px}
 .cover-large{height:170px}
