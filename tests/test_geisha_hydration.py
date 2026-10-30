@@ -36,6 +36,8 @@ class GeishaHomeHydrationTest(unittest.TestCase):
             page = html.decode("utf-8")
             self.assertEqual(mime, "text/html; charset=utf-8")
             self.assertIn('class="top-header"', page)
+            self.assertIn('id="zshop-geisha-visibility"', page)
+            self.assertIn("#wrapper{display:block!important}", page)
             self.assertIn('class="top-main" data-isloaded="true"', page)
             self.assertIn('class="top-content"', page)
             self.assertIn('class="top-content-img lazy"', page)
@@ -71,6 +73,7 @@ class GeishaHomeHydrationTest(unittest.TestCase):
             archive = GeishaArchive(temp, [{"name": "a", "popularity": 1}])
             _, html = archive.read("/geisha/shelf02_01.html")
             self.assertNotIn(b"ft_navi", html)
+            self.assertNotIn(b"zshop-geisha-visibility", html)
             self.assertIn(b"Charts", html)
 
     def test_no_account_or_download_actions(self):

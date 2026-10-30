@@ -51,6 +51,15 @@ def preview_html(data, name=None, catalog=()):
                   page, count=1)
     if name == "index.html":
         page = hydrate_index(page, catalog)
+        # Geisha's original CSS hides #wrapper with display:none until its
+        # original boot.js makes it visible. That script is intentionally
+        # blocked here, so expose the historical wrapper without replacing UI.
+        page = re.sub(
+            r"(?i)</head\s*>",
+            '<style type="text/css" id="zshop-geisha-visibility">'
+            '#wrapper{display:block!important}</style></head>',
+            page, count=1
+        )
     # The only script served is the small, audited applet startup bridge.
     startup_tag = '<script src="/geisha/zshop-bridge.js"></script>'
     if re.search(r"(?i)</body\s*>", page):
