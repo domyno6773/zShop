@@ -1,0 +1,48 @@
+{
+  "metadata": {
+    "source": "FICTIONAL_DEMO",
+    "note": "Invented titles for testing. No Nintendo content or downloads."
+  },
+  "titles": [
+    {
+      "id": "demo-puzzle",
+      "name": "Puzzle di prova",
+      "category": "puzzle",
+      "description": "Pagina diagnostica di navigazione.",
+      "release": "2026-10-20",
+      "popularity": 5
+    },
+    {
+      "id": "demo-platform",
+      "name": "Avventura di prova",
+      "category": "platform",
+      "description": "Nessun contenuto viene installato.",
+      "release": "2026-10-12",
+      "popularity": 9
+    },
+    {
+      "id": "demo-race",
+      "name": "Corse di prova",
+      "category": "race",
+      "description": "Verifica ordinamento New Releases.",
+      "release": "2026-10-26",
+      "popularity": 8
+    },
+    {
+      "id": "demo-retro",
+      "name": "Retro di prova",
+      "category": "retro",
+      "description": "Solo dati dimostrativi.",
+      "release": "2026-09-13",
+      "popularity": 3
+    },
+    {
+      "id": "demo-mario",
+      "name": "Mario Games - segnaposto",
+      "category": "mario",
+      "description": "Test categoria Mario.",
+      "release": "2026-09-03",
+      "popularity": 7
+    }
+  ]
+}
