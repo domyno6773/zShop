@@ -100,8 +100,15 @@ class BrowserRegressionTests(unittest.TestCase):
                                   wait_until='load')
                         self.assertTrue(page.locator('form#zshop-safe-search').is_visible())
                         page.locator('input[name="freeword"]').fill('Corsa')
-                        page.locator('button.search-submit').click()
-                        page.wait_for_url('**/geisha/shelf02_01.html?freeword=Corsa')
+                        # Historical pages may keep assets pending. Check that
+                        # the click really navigates and that the list DOM
+                        # renders, rather than waiting for every asset to load.
+                        page.locator('button.search-submit').evaluate(
+                            '(button) => button.click()')
+                        page.wait_for_url('**/geisha/shelf02_01.html?freeword=Corsa',
+                                          wait_until='commit', timeout=12000)
+                        page.locator('li.m-list-item').wait_for(
+                            state='visible', timeout=12000)
                         self.assertEqual(page.locator('li.m-list-item').count(), 1)
                         self.assertIn('Corsa Zero', page.locator('#shelf-list').inner_text())
                         self.assertNotIn('Puzzle Aurora', page.locator('#shelf-list').inner_text())
