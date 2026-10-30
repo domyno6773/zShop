@@ -1,47 +1,68 @@
-# zShop — Wii U eShop restoration research
+# zShop — ripristino dell'esperienza eShop Wii U
 
-> **Status: experimental, desktop-only prototype. Not a Wii U plugin, not an installable shop.**
+> **Stato: sperimentale. Build v0.1.0 diagnostica compilata per Aroma. Non è ancora un negozio funzionante.**
 
-zShop explores restoring a usable catalog and navigation experience **inside the original Nintendo Wii U eShop application**, on a console running Aroma. The Nintendo applet is the target UI host; replacing it with a homebrew application is **not** the design goal.
+zShop è un progetto open-source per recuperare la navigazione del **Nintendo eShop originale Wii U**, usando l'applet Nintendo e il Wii U GamePad anziché sostituirli con una homebrew indipendente.
 
-The supplied **newShop.wps / uShop Access v2.2.0-safe** was studied as an external reference, **not** accepted as safe or reused as a binary in this repository. The observed problems on a 5.5.5E console were: Best Sellers and New Releases can trap navigation; other categories return Home; titles are repeated. An update from an older Aroma release fixed the incompatible-plugin loader error but **not** those catalog issues. They could be server-side; the cause has not yet been verified.
+## Cosa funziona già
 
-## What is here
+- ✅ Backend diagnostico locale in Python: categorie, ricerca, schede demo e navigazione di base (non ancora collegato alla Wii U).
+- ✅ Plugin WUPS **`plugin/zShop.wps`** compilabile da C++ con toolchain Wii U ufficiale.
+- ✅ Intercettazione **passiva** di `FSOpenFile` per riconoscere il caricamento di `vol/content/initial.oma`.
+- ✅ Interruttore nel menu Aroma, **disabilitato per impostazione predefinita**, con stato del rilevamento.
+- ✅ Test automatici Python e compilazione Docker nella CI di GitHub Actions.
+- ❌ Nessun reindirizzamento del catalogo nelle build correnti.
+- ❌ Nessun download o installazione di titoli.
 
-- `backend.py`: localhost-only, dependency-free diagnostic catalog server (Python 3.9+). Plain HTML and links designed to be a conservative starting point for the Wii U's older browser.
-- `catalog.example.json`: **fictional** sample titles; no real games or content URLs.
-- `tools/inspect_wps.py`: passive ELF/WPS inspector. It reads a file you provide but never executes, patches or uploads it.
-- `tests/`: tests for navigation, escaping, parsing and disabled installs.
-- `docs/ROADMAP.md`: milestones, architecture and safety gates.
+Il plugin v0.1.0 **non modifica l'eShop**, i server di autenticazione Nintendo, la memoria IOSU o i certificati SSL. È concepito come prima prova di compatibilità sulla console.
 
-## Run locally
+## Scaricare la build diagnostica
+
+Apri [GitHub Actions — Build Aroma diagnostic plugin](https://github.com/domyno6773/zShop/actions/workflows/build-plugin.yml), scegli una build riuscita e scarica l'artefatto **`zShop-phase1-diagnostic-wps`**. All'interno c'è il file `zShop.wps`.
+
+Per istruzioni di installazione, verifica e rollback, leggi **[Fase 1 diagnostica](docs/PHASE1_DIAGNOSTIC.md)**.
+
+### Importante: non caricare due plugin contemporaneamente
+
+Prima di provare zShop, rinomina `sd:/wiiu/environments/aroma/plugins/newShop.wps` in `newShop.wps.disabled`. Non eliminare l'originale. Dopo il test puoi rimuovere `zShop.wps` e ripristinare `newShop.wps`.
+
+La console di riferimento ha firmware **5.5.5E e Aroma aggiornato**. Il superamento dei test automatici non certifica la compatibilità sulla console: occorre una prova reale.
+
+## Sviluppo
 
 ```sh
-python backend.py
-# open http://127.0.0.1:8080/ninja/wood_index.html
+# Test del backend
 python -m unittest discover -s tests -v
+python backend.py
+# http://127.0.0.1:8080/ninja/wood_index.html
+
+# Compilazione del plugin
+docker build -f plugin/Dockerfile -t zshop-wups-builder plugin
+docker run --rm -v "$PWD/plugin:/project" zshop-wups-builder make
+# plugin/zShop.wps
+
+# Analisi passiva del vecchio plugin, solo se possiedi una copia locale
 python tools/inspect_wps.py "newShop(1).wps" -o report.json
 ```
 
-The original binary is deliberately **not committed**; the inspector test skips itself when it is not locally available. By default the demo listens only on 127.0.0.1:8080; it cannot be used by a Wii U on another device without further deliberate development and testing.
+## Architettura e piano
 
-## Non-goals and constraints
+Consulta [ROADMAP](docs/ROADMAP.md) e [audit del plugin originale](docs/ORIGINAL_PLUGIN_AUDIT.md).
 
-- No proprietary eShop HTML, Nintendo branding assets or full Nintendo interface clone committed.
-- No credential collection, ticket forging, license bypassing, or unaudited redirects of Nintendo authentication/commerce services.
-- No SSL bypass, IOSU memory patching, automatic installs or changes to console firmware.
-- Download support, if added later, must use legal/authorized content and preserve platform access checks.
-- The test backend does **not** prove the native eShop API, browser history, HOME or B behavior on console.
+Il vecchio `newShop.wps`, fornito per l'analisi, non viene distribuito qui. Mostrava reindirizzamenti di servizi sensibili verso un server non verificato. zShop non eredita tali patch.
 
-## Milestones
+## Limitazioni e sicurezza
 
-See [ROADMAP](docs/ROADMAP.md). First verify the eShop navigation and its native browser APIs on **real hardware**; only then build a minimal Aroma WUPS adapter and connect it to an explicitly configured backend. At this stage, **do not copy any files from this repository to the Wii U SD card**.
+- Nessuna raccolta di credenziali o informazioni di account.
+- Nessuna modifica di NNID/PNID, ticket, autorizzazioni o servizi commerciali Nintendo.
+- Nessuna alterazione IOSU o SSL; nessuna installazione automatica.
+- Integrazioni future solo per contenuti distribuiti e installati con autorizzazioni valide.
+- Nessuna garanzia di funzionamento dell'eShop originale, ormai chiuso ai nuovi acquisti.
 
-## Technical references
+## Riferimenti tecnici
 
-- [Pretendo Grove](https://github.com/PretendoNetwork/Grove) — archived research on native eShop JavaScript APIs.
+- [Wii U Plugin System](https://github.com/wiiu-env/WiiUPluginSystem)
 - [Aroma](https://github.com/wiiu-env/Aroma)
-- [Inkay](https://github.com/PretendoNetwork/Inkay)
-- [Ninja server notes](https://github.com/kinnay/NintendoClients/wiki/Ninja-Server)
+- [Pretendo Grove](https://github.com/PretendoNetwork/Grove) — riferimento archiviato sulle API JavaScript native dell'eShop.
 
-This repository is a research prototype, not an official Nintendo/Pretendo project.
+Progetto indipendente, non affiliato a Nintendo o Pretendo.

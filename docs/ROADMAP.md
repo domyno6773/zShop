@@ -1,50 +1,56 @@
-# zShop roadmap
+# zShop roadmap — aggiornato al 30/10/2026
 
-## Requirement
+**Requisito non negoziabile:** mantenere l'applet eShop Nintendo originale, con navigazione tramite Wii U GamePad.
 
-Keep the **original Nintendo Wii U eShop applet** and its GamePad navigation. Avoid replacing the console app with a normal homebrew front end. A desktop HTML prototype is **not** equivalent to an original eShop experience.
+## Diagnosi della console
 
-## Observations from real hardware (user-reported)
+- Wii U europea 5.5.5E con Aroma aggiornato.
+- Aggiornare Aroma ha risolto il messaggio `newShop.wps Incompatible version`.
+- Nel vecchio uShop: Best Sellers / New Releases bloccano Back / My Profile; altre categorie tornano alla Home; titoli ripetuti.
+- La causa non è ancora attribuibile con certezza al server: servono verifiche su hardware.
 
-- Wii U firmware: 5.5.5E, Aroma. Plugin loader originally showed "Incompatible version" with Aroma 0.2.3.
-- Updating Aroma allowed newShop.wps to load and the eShop applet to open.
-- "Best Sellers" / "New Releases" pages respond visually to taps but Back / My Profile stop navigating.
-- "Mario Games" and other categories return Home; titles repeat.
-- The report does **not** establish whether the backend or frontend causes these bugs. We need controlled HTTP traces and console navigation tests.
+## Fase 0 — base diagnostica locale: COMPLETATA
 
-## Phase 1 — local baseline (current)
+- [x] Repository GitHub e documentazione.
+- [x] Analizzatore ELF/WPS non esecutivo.
+- [x] Backend Python localhost con catalogo completamente fittizio.
+- [x] Test per categorie, link, ricerca, escaping e profilo.
 
-- [x] Public repository created
-- [x] Passive .wps metadata / compressed ELF inspection tool
-- [x] Local diagnostic server using /ninja/wood_index.html
-- [x] Separate, testable category pages, search, detail and profile
-- [x] Default localhost-only, no account, ticket, installation or Nintendo CDN access
-- [ ] Collect protocol-compatible page request/response traces on a test console
-- [ ] Validate the native Back, B and HOME behaviors in an unmodified applet
+## Fase 1a — toolchain e plugin WUPS passivo: COMPILATA; HARDWARE DA TESTARE
 
-## Phase 2 — minimally scoped Aroma adapter
+- [x] Verificare gli esempi ufficiali WUPS e la toolchain corrente.
+- [x] Sorgente C++ del plugin compilabile con toolchain PowerPC pin.
+- [x] Hook `FSOpenFile` pass-through: nessun argomento o risultato modificato.
+- [x] Semplice rilevamento `initial.oma`, opt-in e senza telemetria.
+- [x] Menu di configurazione Aroma e salvataggio della preferenza.
+- [x] GitHub Actions per la build WPS.
+- [ ] Verificare il caricamento su Wii U 5.5.5E.
+- [ ] Rilevare `initial.oma` sulla console.
+- [ ] Verificare HOME, uscita dall'eShop e rimozione del plugin.
 
-- [ ] Review current WUPS, Aroma and function patcher headers and build requirements.
-- [ ] Implement from source, **not a binary patch**, a narrowly scoped redirect of eShop applet entrypoint only.
-- [ ] Make backend address explicitly configurable and disabled by default.
-- [ ] Never redirect NNID/PNID login or Nintendo commerce/authentication hosts.
-- [ ] Enable diagnostics without collecting user IDs, session cookies, tokens or passwords.
-- [ ] Verify safe boot/disable behavior before a hardware build.
+## Fase 1b — reindirizzamento dell'applet, dopo i test
 
-## Phase 3 — original-applet catalog integration
+- [ ] Studiare e validare l'API ContentRedirection su Aroma aggiornato.
+- [ ] Progettare una sorgente di pagina con destinazione locale esplicitamente impostata.
+- [ ] Introdurre l'opt-in al reindirizzamento mantenendolo OFF di default.
+- [ ] Limitare il reindirizzamento alla pagina applet, senza toccare autenticazione o CDN.
+- [ ] Verificare il rollback senza residui e l'assenza di interferenze con altri plugin.
 
-- [ ] Map supported eShop HTML structure and native Wii U JavaScript bridge APIs.
-- [ ] Deliver stable Home, category, search, game detail, and Back/My Profile behavior.
-- [ ] Ensure the Wii U's older browser can parse all markup and scripts.
-- [ ] Use only licensed/distributable metadata and assets.
-- [ ] Test every navigation path on 5.5.5E Aroma without a signed-in real account.
+## Fase 2 — esperienza eShop originale
 
-## Phase 4 — download integration (future research)
+- [ ] Catalogo completo di metadati legalmente distribuibili.
+- [ ] Pagine Home / categorie / ricerca / dettaglio.
+- [ ] Back / B / HOME / My Profile sempre coerenti.
+- [ ] Test in WebKit Wii U con API native appropriate.
+- [ ] Test hardware italiano/europeo, senza account autenticato.
 
-- [ ] Identify legitimate Nintendo CDN title/update flows and license requirements.
-- [ ] Support only authorized content; do not forge tickets, bypass authorization or intercept credentials.
-- [ ] Install/queue functionality only after independent testing and explicit safeguards.
+## Fase 3 — download autorizzati
 
-## Release gates
+- [ ] Ricerca sui flussi legittimi per titoli posseduti, aggiornamenti e contenuti liberi.
+- [ ] Integrazione trasparente con verifiche di licenza e autorizzazione.
+- [ ] Test separati di integrità, spazio, ripresa e uscita sicura.
+- [ ] Niente token inventati, ticket falsificati o bypass SSL.
 
-A successful desktop unit test does NOT validate Wii U browser compatibility or any installer. A release requires tested hardware behaviors, reproducible build instructions, a documented rollback path and review of all network destinations. Do not ship an unsafe binary as an interim "fix".
+## Gate di rilascio
+
+Build CI verde != prova hardware. Non pubblicare release dichiarate stabili prima di test reali. Nessuna distribuzione dell'eseguibile esterno newShop originale.
