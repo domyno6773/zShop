@@ -10,6 +10,9 @@ venv/
 *.log
 report.json
 *.local.json
+*.jsonl
+zshop-code-backup-*/
+.zshop-update-*/
 .DS_Store
 
 # User-supplied proprietary eShop/Geisha archives; never commit them

@@ -86,6 +86,13 @@ class GeishaHomeHydrationTest(unittest.TestCase):
             with self.subTest(forbidden=forbidden):
                 self.assertNotIn(forbidden, page)
 
+    def test_secondary_wrapper_revealed_without_home_hydration(self):
+        from geisha_archive import preview_html
+        html = b'<html><head></head><body><div id="wrapper">Charts</div></body></html>'
+        page = preview_html(html, 'shelf02_01.html').decode()
+        self.assertIn('#wrapper{display:block!important}', page)
+        self.assertNotIn('top-content', page)
+
 
 if __name__ == "__main__":
     unittest.main()

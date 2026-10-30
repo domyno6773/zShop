@@ -3,18 +3,13 @@ from pathlib import Path
 from urllib.parse import unquote
 import mimetypes
 import re
+from hashlib import sha256
 
 from geisha_preview_renderer import hydrate_index
 
 # Only audited JavaScript executed in read-only Geisha mode. The historical
 # boot.js is NOT served. This bridge only dismisses the native startup screen.
-SAFE_STARTUP_BRIDGE = b"""(function(){try{
-var b=window.wiiuBrowser;
-if(b){
- if(typeof b.endStartUp==='function'){b.endStartUp(true);}
- if(typeof b.lockHomeButtonMenu==='function'){b.lockHomeButtonMenu(false);}
-}
-}catch(ignored){}}());"""
+SAFE_STARTUP_BRIDGE = (Path(__file__).parent / 'zshop_bridge.js').read_bytes()
 
 ARCHIVE_SUBDIR = Path("geisha_wup.cdn.nintendo.net/geisha-wup.cdn.nintendo.net/geisha")
 EXTENSIONS = {".html", ".htm", ".css", ".png", ".jpg", ".jpeg", ".gif",
@@ -28,7 +23,8 @@ CSS_IMPORT = re.compile(r"(?is)@import\s+[^;]+;")
 CSS_REMOTE = re.compile(r"""(?is)url\(\s*['"]?(?:https?:|//)[^)]*\)""")
 
 
-def preview_html(data, name=None, catalog=()):
+def preview_html(data, name=None, catalog=(), *, css=True, native='all',
+                 direct=False, page_id='00000000'):
     """Preserve archived layout without enabling unreviewed console API calls."""
     page = data.decode("utf-8", errors="replace")
     page = SCRIPT_TAGS.sub("", page)
@@ -51,22 +47,37 @@ def preview_html(data, name=None, catalog=()):
                   page, count=1)
     if name == "index.html":
         page = hydrate_index(page, catalog)
-        # Geisha's original CSS hides #wrapper with display:none until its
-        # original boot.js makes it visible. That script is intentionally
-        # blocked here, so expose the historical wrapper without replacing UI.
+    if re.search(r'''(?i)\bid\s*=\s*["']wrapper["']''', page):
+        # Home AND Charts use the boot.js visibility gate. Never rely on
+        # disabled source scripts to reveal a read-only document.
         page = re.sub(
             r"(?i)</head\s*>",
             '<style type="text/css" id="zshop-geisha-visibility">'
             '#wrapper{display:block!important}</style></head>',
             page, count=1
         )
-    # The only script served is the small, audited applet startup bridge.
-    startup_tag = '<script src="/geisha/zshop-bridge.js"></script>'
+    if not css:
+        page = re.sub(r'(?is)<style\b[^>]*>.*?</style\s*>', '', page)
+        page = re.sub(r'(?is)<link\b[^>]*>', '', page)
+        page = re.sub(r'''(?is)\s+style\s*=\s*(?:"[^"]*"|'[^']*')''', '', page)
+    if direct:
+        # The applet entry lives under /ninja/: use the correct archive base.
+        page = re.sub(r'(?i)<head([^>]*)>', r'<head\1><base href="/geisha/">', page, count=1)
+    startup_tag = bridge_tag(native, page_id)
     if re.search(r"(?i)</body\s*>", page):
         page = re.sub(r"(?i)</body\s*>", startup_tag + "</body>", page, count=1)
     else:
         page += startup_tag
     return page.encode("utf-8")
+
+
+def bridge_tag(native='all', page_id='00000000'):
+    if native not in ('all', 'off', 'startup', 'unlock'):
+        raise ValueError('invalid native mode')
+    if not re.fullmatch(r'[0-9a-f]{8}', page_id):
+        raise ValueError('invalid page ID')
+    return ('<script id="zshop-bridge" src="/geisha/zshop-bridge.js" '
+            'data-native="%s" data-page="%s"></script>') % (native, page_id)
 
 
 def preview_css(data):
@@ -84,7 +95,28 @@ class GeishaArchive:
         if self.root is None:
             raise ValueError("Geisha index.html not found in local archive")
 
-    def read(self, url_path):
+    def summary(self, **options):
+        result = {}
+        for name in ('index.html', 'css/minified/index.css'):
+            file = self.root / name
+            if file.is_file():
+                data = file.read_bytes()
+                result[name] = {'bytes': len(data), 'sha256': sha256(data).hexdigest(),
+                                'utf8_replacements': data.decode('utf-8', errors='replace').count('\ufffd')}
+            else:
+                result[name] = {'missing': True}
+        rendered = preview_html((self.root / 'index.html').read_bytes(), 'index.html',
+                                self.catalog, **options)
+        result['served_home'] = {
+            'bytes': len(rendered), 'sha256': sha256(rendered).hexdigest(),
+            'wrapper_override': b'#wrapper{display:block!important}' in rendered,
+            'home_hydrated': b'data-isloaded="true"' in rendered,
+            'menu_present': b'id="ft_navi"' in rendered,
+            'bridge_count': rendered.count(b'src="/geisha/zshop-bridge.js"'),
+        }
+        return result
+
+    def read(self, url_path, **options):
         """Return (MIME, bytes) or None; reject traversals and executable scripts."""
         if url_path == "/geisha/zshop-bridge.js":
             return "application/javascript; charset=utf-8", SAFE_STARTUP_BRIDGE
@@ -103,7 +135,7 @@ class GeishaArchive:
             return None
         data = file.read_bytes()
         if file.suffix.lower() in (".html", ".htm"):
-            return "text/html; charset=utf-8", preview_html(data, name, self.catalog)
+            return "text/html; charset=utf-8", preview_html(data, name, self.catalog, **options)
         if file.suffix.lower() == ".css":
             return "text/css; charset=utf-8", preview_css(data)
         return mimetypes.guess_type(str(file))[0] or "application/octet-stream", data

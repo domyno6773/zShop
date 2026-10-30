@@ -60,6 +60,10 @@ Vedi [indagine e limiti tecnici](docs/ORIGINAL_FRONTEND.md).
 
 ### Fix di `Loading...` della prima anteprima Geisha
 
+Per la schermata bianca consulta la [diagnosi riproducibile e gli esperimenti Wii U](docs/WHITE_SCREEN_DIAGNOSTICS.md):
+confronto con l'archivio locale, identificativo della versione servita, log anonimi,
+probe indipendente e aggiornamento ZIP senza riscaricare Geisha. La verifica hardware resta necessaria.
+
 Corretto il mancato `endStartUp(true)` dell'applet e l'HTML originale
 con `#el-top` non inizializzato. Ora la pagina viene popolata **dal server**
 utilizzando le classi originali Geisha (`top-content`, `top-main`, `ft_navi`)

@@ -10,7 +10,10 @@ from datetime import datetime
 from html import escape
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from geisha_archive import GeishaArchive
+from geisha_archive import GeishaArchive, bridge_tag
+from geisha_diagnostics import Diagnostics, PIXEL, probe_html, route_kind
+from secrets import token_hex
+from time import monotonic
 from urllib.parse import parse_qs, urlencode, urlsplit
 
 ROOT = Path(__file__).resolve().parent
@@ -117,22 +120,80 @@ if(wiiuBrowser.lockHomeButtonMenu){wiiuBrowser.lockHomeButtonMenu(false);}
     )
     return page.encode("utf-8")
 
-def make_handler(catalog, geisha=None):
+def make_handler(catalog, geisha=None, *, diagnostics=None, entry='redirect',
+                 native='all', css=True):
+    diagnostics = diagnostics or Diagnostics()
+    if entry not in ('redirect', 'direct', 'probe'):
+        raise ValueError('invalid entry mode')
+    if native not in ('all', 'off', 'startup', 'unlock'):
+        raise ValueError('invalid native mode')
     class Handler(BaseHTTPRequestHandler):
+        def do_HEAD(self):
+            self.do_GET()
+
         def do_GET(self):
+            self.started = monotonic()
+            self.page_id = None
             parsed = urlsplit(self.path)
+            self.route = route_kind(parsed.path)
+            params = parse_qs(parsed.query, keep_blank_values=True)
             if parsed.path in ("/health", "/healthz"):
-                self.reply(200, b'{"status":"ok","mode":"demo"}', "application/json")
+                self.json_reply({'status': 'ok', 'mode': 'geisha-preview' if geisha else 'demo',
+                                 'build': diagnostics.build, 'entry': entry,
+                                 'native': native, 'css': css})
+                return
+            if parsed.path == '/__zshop__/status':
+                self.json_reply({'build': diagnostics.build,
+                                 'mode': 'geisha-preview' if geisha else 'demo',
+                                 'entry': entry, 'native': native, 'css': css,
+                                 'archive': geisha.summary(css=css, native=native) if geisha else None,
+                                 'events': diagnostics.snapshot()})
+                return
+            if parsed.path == '/__zshop__/event':
+                accepted = diagnostics.client_event(params) if self.command == 'GET' else True
+                self.reply(200 if accepted else 400, PIXEL if accepted else b'Bad event',
+                           'image/gif' if accepted else 'text/plain')
+                return
+            selected_native = params.get('zshop_native', [native])[0]
+            if selected_native not in ('all', 'off', 'startup', 'unlock'):
+                selected_native = native
+            selected_css = params.get('zshop_css', ['on' if css else 'off'])[0] != 'off'
+            probe = parsed.path == '/__zshop__/probe' or (
+                geisha is not None and parsed.path in ('/', PATH) and entry == 'probe')
+            if probe:
+                self.page_id = token_hex(4)
+                self.reply(200, probe_html(bridge_tag(selected_native, self.page_id),
+                                           diagnostics.build), 'text/html; charset=utf-8')
+                return
+            # Probe works without an archive too; original archive JS stays denied.
+            if parsed.path == '/geisha/zshop-bridge.js':
+                from geisha_archive import SAFE_STARTUP_BRIDGE
+                self.reply(200, SAFE_STARTUP_BRIDGE, 'application/javascript; charset=utf-8')
                 return
             if geisha is not None:
                 if parsed.path in ("/", PATH, "/geisha", "/geisha/"):
-                    self.send_response(302)
-                    self.send_header("Location", "/geisha/index.html")
-                    self.send_header("Cache-Control", "no-store")
-                    self.send_header("Content-Length", "0")
-                    self.end_headers()
+                    if entry == 'direct' and parsed.path in ('/', PATH):
+                        self.page_id = token_hex(4)
+                        mime, payload = geisha.read('/geisha/index.html', css=selected_css,
+                                                   native=selected_native, direct=True,
+                                                   page_id=self.page_id)
+                        self.reply(200, payload, mime)
+                        return
+                    # Forward only diagnostic switches, never applet/account queries.
+                    switches = {}
+                    for key, values in (('zshop_native', ('all', 'off', 'startup', 'unlock')),
+                                        ('zshop_css', ('on', 'off'))):
+                        value = params.get(key, [''])[0]
+                        if value in values:
+                            switches[key] = value
+                    location = '/geisha/index.html'
+                    if switches:
+                        location += '?' + urlencode(switches)
+                    self.reply(302, b'', 'text/plain', location=location)
                     return
-                content = geisha.read(parsed.path)
+                self.page_id = token_hex(4) if parsed.path.endswith(('.html', '.htm')) else None
+                content = geisha.read(parsed.path, css=selected_css, native=selected_native,
+                                      page_id=self.page_id or '00000000')
                 if content is not None:
                     mime, payload = content
                     self.reply(200, payload, mime)
@@ -142,27 +203,47 @@ def make_handler(catalog, geisha=None):
             if parsed.path not in ("/", PATH):
                 self.reply(404, b"Not Found", "text/plain")
                 return
-            params = parse_qs(parsed.query, keep_blank_values=True)
             def param(name, max_length):
                 return params.get(name, [""])[0][:max_length]
             self.reply(200, render(param("view", 24) or "home", catalog,
                                    param("q", 60), param("title", 64)),
                        "text/html; charset=utf-8")
 
-        def reply(self, status, body, mime):
+        def json_reply(self, document):
+            self.reply(200, json.dumps(document).encode('utf-8'), 'application/json; charset=utf-8')
+
+        def reply(self, status, body, mime, location=None):
             self.send_response(status)
             self.send_header("Content-Type", mime)
             self.send_header("Content-Length", str(len(body)))
             self.send_header("Cache-Control", "no-store")
+            self.send_header('Pragma', 'no-cache')
+            self.send_header('Expires', '0')
+            self.send_header('X-zShop-Build', diagnostics.build)
+            if self.page_id:
+                self.send_header('X-zShop-Page', self.page_id)
+            if location:
+                self.send_header('Location', location)
             self.send_header("X-Content-Type-Options", "nosniff")
-            if geisha is not None:
+            if geisha is not None or self.route in ('diagnostic', 'bridge'):
                 self.send_header("Content-Security-Policy",
                                  "default-src 'self'; script-src 'self'; "
                                  "connect-src 'none'; form-action 'none'; "
                                  "object-src 'none'; frame-src 'none'; "
                                  "img-src 'self' data:; style-src 'self' 'unsafe-inline'")
             self.end_headers()
-            self.wfile.write(body)
+            written = True
+            try:
+                if self.command != 'HEAD':
+                    self.wfile.write(body)
+            except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
+                written = False
+            fields = {'kind': 'http', 'method': self.command, 'route': self.route,
+                      'status': status, 'bytes': len(body), 'sent': written,
+                      'ms': round((monotonic() - self.started) * 1000)}
+            if self.page_id:
+                fields['page'] = self.page_id
+            diagnostics.record(**fields)
 
         def log_message(self, *_):
             # Do not log users, query strings, or potential account data.
@@ -177,21 +258,32 @@ def main():
     parser.add_argument("--geisha-root", default=None,
                         help="Local Geisha backup folder; read-only HTML/CSS/images preview "
                              "with all original JavaScript disabled")
+    parser.add_argument('--diagnostic-log', help='Append anonymous technical JSONL events')
+    parser.add_argument('--geisha-entry', choices=('redirect', 'direct', 'probe'), default='redirect')
+    parser.add_argument('--geisha-native', choices=('all', 'off', 'startup', 'unlock'), default='all')
+    parser.add_argument('--geisha-css', choices=('on', 'off'), default='on')
     args = parser.parse_args()
     catalog = load_catalog(args.catalog)
     geisha = GeishaArchive(args.geisha_root, catalog) if args.geisha_root else None
+    diagnostics = Diagnostics(args.diagnostic_log)
     server = ThreadingHTTPServer((args.host, args.port),
-                                 make_handler(catalog, geisha=geisha))
+                                 make_handler(catalog, geisha=geisha, diagnostics=diagnostics,
+                                              entry=args.geisha_entry, native=args.geisha_native,
+                                              css=args.geisha_css == 'on'))
     print("Development only: http://%s:%s%s" %
           (args.host, server.server_address[1], PATH))
     if geisha:
-        print("Geisha read-only preview (NO JavaScript):", geisha.root)
+        print('Geisha read-only preview (original JavaScript disabled):', geisha.root)
+    print('zShop build:', diagnostics.build, '| entry:', args.geisha_entry,
+          '| native:', args.geisha_native, '| CSS:', args.geisha_css)
+    print('Diagnostics: /__zshop__/status | display probe: /__zshop__/probe')
     try:
         server.serve_forever()
     except KeyboardInterrupt:
         pass
     finally:
         server.server_close()
+        diagnostics.close()
 
 if __name__ == "__main__":
     main()

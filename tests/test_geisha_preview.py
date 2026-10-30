@@ -1,5 +1,6 @@
 """Regression and safety checks for local historical Geisha preview."""
 import sys
+import json
 import tempfile
 import threading
 import unittest
@@ -125,7 +126,9 @@ class GeishaHttpIntegrationTests(GeishaPreviewTests):
 
     def test_health_still_available(self):
         with urlopen(self.base + "/health", timeout=3) as response:
-            self.assertIn('"status":"ok"', response.read().decode("utf-8"))
+            health = json.loads(response.read())
+            self.assertEqual(health['status'], 'ok')
+            self.assertEqual(health['mode'], 'geisha-preview')
 
 
 if __name__ == "__main__":
