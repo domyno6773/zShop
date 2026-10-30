@@ -10,6 +10,7 @@ from datetime import datetime
 from html import escape
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from geisha_archive import GeishaArchive
 from urllib.parse import parse_qs, urlencode, urlsplit
 
 ROOT = Path(__file__).resolve().parent
@@ -116,12 +117,27 @@ if(wiiuBrowser.lockHomeButtonMenu){wiiuBrowser.lockHomeButtonMenu(false);}
     )
     return page.encode("utf-8")
 
-def make_handler(catalog):
+def make_handler(catalog, geisha=None):
     class Handler(BaseHTTPRequestHandler):
         def do_GET(self):
             parsed = urlsplit(self.path)
             if parsed.path in ("/health", "/healthz"):
                 self.reply(200, b'{"status":"ok","mode":"demo"}', "application/json")
+                return
+            if geisha is not None:
+                if parsed.path in ("/", PATH, "/geisha", "/geisha/"):
+                    self.send_response(302)
+                    self.send_header("Location", "/geisha/index.html")
+                    self.send_header("Cache-Control", "no-store")
+                    self.send_header("Content-Length", "0")
+                    self.end_headers()
+                    return
+                content = geisha.read(parsed.path)
+                if content is not None:
+                    mime, payload = content
+                    self.reply(200, payload, mime)
+                else:
+                    self.reply(404, b"Not Found", "text/plain")
                 return
             if parsed.path not in ("/", PATH):
                 self.reply(404, b"Not Found", "text/plain")
@@ -139,6 +155,12 @@ def make_handler(catalog):
             self.send_header("Content-Length", str(len(body)))
             self.send_header("Cache-Control", "no-store")
             self.send_header("X-Content-Type-Options", "nosniff")
+            if geisha is not None:
+                self.send_header("Content-Security-Policy",
+                                 "default-src 'self'; script-src 'none'; "
+                                 "connect-src 'none'; form-action 'none'; "
+                                 "object-src 'none'; frame-src 'none'; "
+                                 "img-src 'self' data:; style-src 'self' 'unsafe-inline'")
             self.end_headers()
             self.wfile.write(body)
 
@@ -152,11 +174,18 @@ def main():
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8080)
     parser.add_argument("--catalog", default=str(ROOT / "catalog.example.json"))
+    parser.add_argument("--geisha-root", default=None,
+                        help="Local Geisha backup folder; read-only HTML/CSS/images preview "
+                             "with all original JavaScript disabled")
     args = parser.parse_args()
     catalog = load_catalog(args.catalog)
-    server = ThreadingHTTPServer((args.host, args.port), make_handler(catalog))
+    geisha = GeishaArchive(args.geisha_root) if args.geisha_root else None
+    server = ThreadingHTTPServer((args.host, args.port),
+                                 make_handler(catalog, geisha=geisha))
     print("Development only: http://%s:%s%s" %
           (args.host, server.server_address[1], PATH))
+    if geisha:
+        print("Geisha read-only preview (NO JavaScript):", geisha.root)
     try:
         server.serve_forever()
     except KeyboardInterrupt:
