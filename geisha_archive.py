@@ -25,6 +25,12 @@ def preview_html(data):
     page = META_REFRESH.sub("", page)
     page = EVENTS.sub("", page)
     page = REMOTE.sub("", page)
+    # Keep external image requests blocked even in inline CSS, on Wii U
+    # browsers that may not enforce the Content-Security-Policy header.
+    page = CSS_IMPORT.sub("", page)
+    page = CSS_REMOTE.sub("none", page)
+    page = re.sub(r"(?is)\s+(?:href|src|action)\s*=\s*(?:javascript:|https?://|//)[^\s>]+",
+                  "", page)
     page = re.sub(r"""(?is)\s+srcset\s*=\s*(?:"[^"]*"|'[^']*')""", "", page)
     page = re.sub(r"(?is)<form\b[^>]*>", "<div>", page)
     page = re.sub(r"(?is)</form\s*>", "</div>", page)
