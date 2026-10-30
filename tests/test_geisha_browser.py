@@ -33,8 +33,8 @@ class BrowserRegressionTests(unittest.TestCase):
             (root / 'shelf02_01.html').write_text(
                 '<html><head><link rel="stylesheet" href="css/test.css"></head>'
                 '<body><div id="wrapper">Synthetic secondary page</div></body></html>', encoding='utf-8')
-            pixel = base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwC'
-                                     'AAAAC0lEQVR42mP8/x8AAwMCAO+a6QAAAABJRU5ErkJggg==')
+            pixel = base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1Pe'
+                                     'AAAADElEQVR4nGP4//8/AAX+Av4N70a4AAAAAElFTkSuQmCC')
             (root / 'image/placeholder/place_banner.png').write_bytes(pixel)
             (root / 'image/img_unknown_MiiIcon.png').write_bytes(pixel)
             report = check_archive(root, Path(directory) / 'renders',
