@@ -4,6 +4,24 @@
 
 zShop è un progetto open-source per recuperare la navigazione del **Nintendo eShop originale Wii U**, usando l'applet Nintendo e il Wii U GamePad anziché sostituirli con una homebrew indipendente.
 
+## Compatibilità con Pretendo
+
+**Nota del 30/10/2026:** con Inkay/Pretendo attivo, il plugin diagnostico
+v0.1.0 non impedisce l'errore `377-0001 — This eShop is not available on Pretendo`.
+Non è un difetto della compilazione: il codice ufficiale di Inkay reindirizza
+l'eShop a Pretendo, che non ospita il negozio.
+
+Obiettivo di zShop: Pretendo deve rimanere attivo per amici, online e Miiverse;
+solo la pagina dell'eShop dovrà essere gestita da zShop. È allo studio
+un'opzione **eShop-only** per Inkay, non una disattivazione di Pretendo.
+
+Non installare per ora i binari sperimentali di `compat/inkay`: i controlli
+di build non sostituiscono una prova in console e saltare la sola patch
+dell'applet non disfa i reindirizzamenti IOSU di Inkay.
+
+Vedi [analisi e compatibilità Inkay](compat/inkay/README.md) e
+[issue #2](https://github.com/domyno6773/zShop/issues/2).
+
 ## Cosa funziona già
 
 - ✅ Backend diagnostico locale in Python: categorie, ricerca, schede demo e navigazione di base (non ancora collegato alla Wii U).

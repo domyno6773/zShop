@@ -28,6 +28,16 @@
 - [ ] Rilevare `initial.oma` sulla console.
 - [ ] Verificare HOME, uscita dall'eShop e rimozione del plugin.
 
+## Blocco Pretendo — compatibilità eShop esclusiva: IN RICERCA
+
+- [x] Riprodotto errore 377-0001 con Inkay attivo e zShop diagnostico passivo.
+- [x] Identificato redirect Inkay di initial.oma verso server Pretendo tramite patchEshop().
+- [x] Creato patch sperimentale build-time che salta SOLO patchEshop() su Inkay upstream pin.
+- [ ] Verificare build sperimentale e valutare integrazione con upstream (GPLv3).
+- [ ] Verificare su console che Pretendo resti attivo per amici/Miiverse/multiplayer.
+- [ ] Convalidare che le patch IOSU commerce già presenti in Inkay non interferiscano.
+- [ ] Portare una soluzione stabile e non invasiva: zShop eShop-only, senza disattivare Pretendo.
+
 ## Fase 1b — reindirizzamento dell'applet, dopo i test
 
 - [ ] Studiare e validare l'API ContentRedirection su Aroma aggiornato.
