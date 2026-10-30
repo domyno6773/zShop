@@ -50,7 +50,7 @@
 - [ ] Verificare i percorsi di navigazione e il recupero con HOME/B.
 - [ ] Se il hook non viene chiamato, indagare una seconda soluzione confinata al processo eShop senza toccare Inkay.
 
-## Fase 2 — vero frontend Geisha Nintendo: NON ANCORA RIPRISTINATO
+## Fase 2 — Geisha autentico, navigazione dinamica IN PROGRESS
 
 - [x] Verificata architettura originale Ninja → Geisha.
 - [x] Rimosso il precedente frontend inventato: contrario al requisito.
@@ -58,12 +58,14 @@
 - [x] Individuata una raccolta pubblica con pagine Geisha originali e risorse, ma mescolate a file alterati; NON verificata come dump intatto.
 - [x] Anteprima Geisha locale read-only: template della Home e menu originale renderizzati lato server con catalogo demo, asset e CSS storici.
 - [x] Corretto infinito Loading iniziale: inserimento contenuti in #el-top e bridge JS che chiama endStartUp(true), senza codice degli archivi.
-- [ ] Verificare sul GamePad che lo splash nativo si chiuda e il menu Geisha statico venga mostrato correttamente.
+- [x] Work ha registrato la conferma dell'utente: la UI Geisha statica è visibile sulla Wii U; bridge startup e unlock riusciti, Inkay invariato.
 - [ ] Separare rigorosamente gli script originali dai mock/sostituzioni del progetto di terzi.
 - [ ] Reperire e convalidare un archivio integro di HTML/CSS/JS Geisha.
 - [ ] Verificare provenienza, diritti d'uso, integrità e dipendenze.
 - [ ] Implementare sul server locale l'erogazione dell'interfaccia originale, senza pubblicare asset proprietari non autorizzati.
-- [ ] Ricostruire le chiamate Ninja/Geisha non sensibili e verificare comandi e navigation GamePad.
+- [x] Ricerca tramite modulo HTML GET e liste Geisha server-rendered, in sola lettura con catalogo demo, senza JS originale.
+- [ ] Verificare la nuova ricerca e le classifiche sul GamePad; non confondere i test desktop con quelli hardware.
+- [ ] Ricostruire API Ninja/Geisha non sensibili usando metadati e risorse di origine verificata, e confermare la navigazione reale B/HOME.
 
 Vedi docs/ORIGINAL_FRONTEND.md. Nessuna ulteriore UI ispirata o mockup deve essere presentata come originale.
 

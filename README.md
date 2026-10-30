@@ -74,6 +74,29 @@ restano bloccati. Layout e assets storici provengono dalla copia **locale**.
 Resta una modalità **read-only con catalogo demo**, da provare sul GamePad;
 non è un negozio completo. [Dettagli e aggiornamento per Windows ZIP](docs/ORIGINAL_FRONTEND.md).
 
+### Progresso successivo: ricerca e classifiche in sola lettura
+
+La grafica storica Geisha è stata confermata visibile sulla Wii U, dopo la
+correzione effettuata in Work. **Non alterare questa versione funzionante del
+plugin né il suo bridge di avvio.**
+
+La ricerca originale `always02_01.html` adesso può inviare una richiesta
+HTML GET locale, senza eseguire il JS storico o modificato dell'archivio.
+La pagina `shelf02_01.html` popola `#shelf-list` utilizzando le classi
+CSS originali Geisha (`m-list-item`, `list-title-outline` e
+`list-title-summary`). Le tessere della Home filtrano un titolo specifico
+e i link Home/Back/Search del menu sono navigabili senza JavaScript.
+
+**Per ora si utilizza sempre il catalogo dimostrativo; non rappresenta
+la disponibilità reale dei giochi e non abilita schede dettagliate,
+acquisti, profili o download.** Questa estensione non è ancora confermata
+sul GamePad e richiede test sulla console.
+
+Per installazioni Windows da ZIP, ferma Python e usa il precedente
+`tools/update_backend.ps1` (aggiornato per includere
+`geisha_readonly_navigation.py`), poi riavvia il backend. Vedi
+[guida dettagliata](docs/GEISHA_READONLY_NAVIGATION.md).
+
 ## Prima prova LAN v0.2.0-alpha
 
 **Guida completa:** [Collegamento a server locale e rollback](docs/PHASE1B_LAN_ROUTE.md).
