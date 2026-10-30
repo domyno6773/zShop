@@ -55,7 +55,10 @@
 - [x] Verificata architettura originale Ninja → Geisha.
 - [x] Rimosso il precedente frontend inventato: contrario al requisito.
 - [x] Ripristinato il backend diagnostico LAN già funzionante.
-- [ ] Reperire un archivio completo e autentico di HTML/CSS/JS e risorse Geisha.
+- [x] Individuata una raccolta pubblica con pagine Geisha originali e risorse, ma mescolate a file alterati; NON verificata come dump intatto.
+- [x] Prima modalità locale di sola lettura per verificare HTML/CSS/immagini in possesso dell'utente, senza eseguire JS.
+- [ ] Separare rigorosamente gli script originali dai mock/sostituzioni del progetto di terzi.
+- [ ] Reperire e convalidare un archivio integro di HTML/CSS/JS Geisha.
 - [ ] Verificare provenienza, diritti d'uso, integrità e dipendenze.
 - [ ] Implementare sul server locale l'erogazione dell'interfaccia originale, senza pubblicare asset proprietari non autorizzati.
 - [ ] Ricostruire le chiamate Ninja/Geisha non sensibili e verificare comandi e navigation GamePad.

@@ -11,3 +11,7 @@ venv/
 report.json
 *.local.json
 .DS_Store
+
+# User-supplied proprietary eShop/Geisha archives; never commit them
+local-geisha/
+geisha-backup/

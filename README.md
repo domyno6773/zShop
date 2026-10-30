@@ -1,6 +1,6 @@
 # zShop — ripristino dell'esperienza eShop Wii U
 
-> **Stato: Fase 2 in ricerca. Collegamento all'applet originale funzionante; frontend originale Geisha non ancora recuperato.**
+> **Stato: Fase 2 sperimentale. Recuperati riferimenti a file storici Geisha; attiva un'anteprima locale di sola lettura. Non è ancora un eShop completo.**
 
 zShop è un progetto open-source per recuperare la navigazione del **Nintendo eShop originale Wii U**, usando l'applet Nintendo e il Wii U GamePad anziché sostituirli con una homebrew indipendente.
 
@@ -37,11 +37,26 @@ Non installare i vecchi artefatti della prova.
 Vedi [analisi compatibilità con Inkay](docs/INKAY_COMPATIBILITY.md)
 e [issue #2](https://github.com/domyno6773/zShop/issues/2).
 
-## Fase 2 — frontend originale, non una replica
+## Fase 2 — primi file storici Geisha individuati
 
-La precedente interfaccia personalizzata è stata rimossa da main perché non soddisfa il requisito. L'applet originale funziona già con zShop.wps v0.2.0-alpha e Inkay invariato. La vera UI eShop era erogata dal servizio remoto Geisha; finché non disponiamo di una copia completa e verificata di HTML/CSS/JS originali non possiamo affermare di averla ripristinata.
+Abbiamo individuato [una raccolta pubblica di pagine e risorse Geisha](https://github.com/Greeeeen-lol/Greeeeen-lol.github.io) con circa 1.200 file nell'intera repository. Contiene `geisha/index.html`, `always02_01.html`, `shelf02_01.html`, CSS, immagini e template originari dell'eShop Wii U, **insieme a JavaScript e dati modificati dall'autore per una simulazione offline**. Non è un dump originale intatto, né materiale con diritti di redistribuzione verificati.
 
-Documentazione: [Ricerca del frontend originale](docs/ORIGINAL_FRONTEND.md).
+zShop **non include** quei materiali. Introduce però una modalità locale, opt-in e in sola lettura, per visualizzare il layout storico da una copia dell'archivio già presente sul tuo PC. **Questa non è ancora la Fase 2 completa:** per sicurezza la modalità blocca gli script e quindi alcune sezioni originali rimarranno vuote o sulla schermata di caricamento.
+
+Se disponi di una copia delle risorse Geisha, aggiorna la repository zShop e avvia da PowerShell:
+
+```powershell
+git pull origin main
+python backend.py --host 0.0.0.0 --port 80 --geisha-root "C:\percorso\alla\copia\dell-archivio"
+```
+
+Puoi indicare sia la cartella radice dell'archivio sopra citato, sia la cartella `geisha` contenente `index.html`. Il backend effettua il redirect dalla pagina d'ingresso dell'eShop a `/geisha/index.html` e serve soltanto risorse statiche sicure. Lascia **Inkay e zShop.wps invariati**, con l'IPv4 LAN già impostato.
+
+Per tornare alla pagina diagnostica originale basta riavviare Python **senza** `--geisha-root`.
+
+Il test non utilizza account, certificati, ticket, acquisti o API native di installazione. Non aprire la porta 80 sul router. Non caricare file originali Nintendo nella repository zShop.
+
+Vedi [indagine e limiti tecnici](docs/ORIGINAL_FRONTEND.md).
 
 ## Prima prova LAN v0.2.0-alpha
 
