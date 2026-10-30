@@ -62,7 +62,8 @@ Vedi [indagine e limiti tecnici](docs/ORIGINAL_FRONTEND.md).
 
 Per la schermata bianca consulta la [diagnosi riproducibile e gli esperimenti Wii U](docs/WHITE_SCREEN_DIAGNOSTICS.md):
 confronto con l'archivio locale, identificativo della versione servita, log anonimi,
-probe indipendente e aggiornamento ZIP senza riscaricare Geisha. La verifica hardware resta necessaria.
+probe indipendente e aggiornamento ZIP senza riscaricare Geisha. L'utente ha confermato
+Geisha visibile sulla Wii U; le funzioni dinamiche del negozio restano incomplete.
 
 Corretto il mancato `endStartUp(true)` dell'applet e l'HTML originale
 con `#el-top` non inizializzato. Ora la pagina viene popolata **dal server**

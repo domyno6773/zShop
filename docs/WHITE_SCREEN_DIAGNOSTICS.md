@@ -33,6 +33,29 @@ ottenuto health, ingresso, CSS e bridge con 200 e build coerente. Il redirect
 mantiene HTTP e la porta 80. Questo controlla il server locale, non il percorso
 attraverso firewall/rete dalla console, già verificato dall'utente.
 
+## Conferma sulla Wii U nella stessa sessione
+
+Dopo l'aggiornamento dei cinque file nella cartella ZIP sul Desktop, il server è
+stato avviato sulla porta 80 con build **`e79d6e5b40264454`**, configurazione normale
+`entry=redirect`, `native=all`, `css=on`. L'utente ha chiuso e riaperto l'eShop e
+ha confermato: **«Interfaccia Geisha visibile»**.
+
+Il log anonimo raccolto durante questa prova contiene:
+
+- ingresso 302, Home 200, CSS/bridge/immagini 200;
+- bridge effettivamente eseguito;
+- `startup-ok` e `unlock-ok`: entrambe le chiamate native sono ritornate;
+- `load` con wrapper 1280×861, viewport 1280×720, `visible=1`, nove immagini
+  e nessuna immagine rotta;
+- caricamento di un secondo documento con wrapper visibile e le due chiamate
+  native completate anche in quel documento.
+
+La conferma visiva viene dall'utente; i log forniscono riscontro tecnico della
+stessa prova e non identificano il dispositivo. **La schermata bianca iniziale
+risulta risolta in questa configurazione hardware.** Non è una conferma del
+recupero completo del negozio o delle funzioni dinamiche, che restano incomplete.
+Inkay, plugin, DNS e servizi sensibili non sono stati modificati.
+
 ## Cambiamenti e limiti
 
 - L'override di visibilità copre tutte le pagine che possiedono `#wrapper`,
@@ -162,4 +185,6 @@ chiamata startup che genera un'eccezione e isolamento delle due API.
 La CI esegue inoltre una fixture sintetica con Chromium e WebKit moderni; non
 contiene risorse Nintendo. Il WebKit locale non è stato installabile durante
 questa sessione (timeout dei mirror). Anche una CI WebKit riuscita non emula
-il vecchio motore Wii U né le API native. La conferma su console rimane aperta.
+il vecchio motore Wii U né le API native. La successiva conferma dell'utente sulla
+console, riportata sopra, riguarda la visibilità di Geisha nella configurazione
+testata, non il ripristino completo delle funzioni dell'eShop.
