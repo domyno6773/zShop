@@ -16,7 +16,7 @@ $suffix = (Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + [guid]::NewGuid().ToStrin
 $stagingPath = Join-Path $targetPath ('.zshop-update-' + $suffix)
 $backupPath = Join-Path $targetPath ('zshop-code-backup-' + $suffix)
 $files = @('backend.py', 'geisha_archive.py', 'geisha_preview_renderer.py',
-           'geisha_diagnostics.py', 'zshop_bridge.js')
+           'geisha_diagnostics.py', 'geisha_readonly_navigation.py', 'zshop_bridge.js')
 New-Item -ItemType Directory -Path $stagingPath | Out-Null
 foreach ($name in $files) {
     $url = "https://raw.githubusercontent.com/domyno6773/zShop/$Ref/$name"
@@ -39,6 +39,6 @@ foreach ($name in $files) {
 foreach ($name in $files) {
     Copy-Item -LiteralPath (Join-Path $stagingPath $name) -Destination (Join-Path $targetPath $name) -Force
 }
-Write-Host "Updated five backend files from commit $Ref"
+Write-Host "Updated backend runtime files from commit $Ref"
 Write-Host "Previous code saved in $backupPath"
 Write-Host 'Geisha archive untouched. Restart Python to load the new code.'

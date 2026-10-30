@@ -8,6 +8,7 @@ This is a limited READ-ONLY preview of the actual archived layout structure:
 """
 import re
 from html import escape
+from urllib.parse import quote
 
 HOME_LIST = re.compile(
     r'(?is)<ul\b(?=[^>]*\bid\s*=\s*["\']el-top["\'])[^>]*>.*?</ul>'
@@ -47,11 +48,11 @@ def original_style_tiles(catalog):
     for item in sorted(catalog, key=lambda x: -int(x.get("popularity", 0)))[:8]:
         title = escape(str(item.get("name", "")))
         content.append(
-            '<li class="top-content"><a href="shelf02_01.html">'
+            '<li class="top-content"><a href="shelf02_01.html?q=%s">'
             '<img src="image/placeholder/place_banner.png"'
             ' width="300" height="180" class="top-content-img lazy"></a>'
             '<span class="top-content-caption" style="width:300px;">%s</span>'
-            '</li>' % title
+            '</li>' % (quote(str(item.get("name", ""))), title)
         )
     if not content:
         content.append(

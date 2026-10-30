@@ -7,7 +7,7 @@ from pathlib import Path
 from threading import Lock
 
 CODE_FILES = ('backend.py', 'geisha_archive.py', 'geisha_preview_renderer.py',
-              'geisha_diagnostics.py', 'zshop_bridge.js')
+              'geisha_diagnostics.py', 'geisha_readonly_navigation.py', 'zshop_bridge.js')
 STAGES = frozenset(('bridge', 'dom', 'load', 'script-error', 'native-off',
                     'browser-missing', 'browser-error', 'startup-before',
                     'startup-ok', 'startup-error', 'startup-missing',
