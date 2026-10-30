@@ -23,3 +23,21 @@ To regenerate your own report locally:
 \`python tools/inspect_wps.py "newShop(1).wps" -o report.json\`
 
 Do **not** commit the original WPS or reports containing account/session data.
+
+## Evidenza aggiuntiva: supporto Inkay integrato
+
+Dopo decompressione delle sezioni ELF, la sezione `.rodata` contiene
+i marker `inkay-url`, `inkay-allowlist`, `nintendo-url`,
+`nintendo-allowlist`, l'URL `http://samurai.wup.shop.pretendo.cc/ninja/wood_index.html?`,
+e il corrispondente URL originale
+`https://ninja.wup.shop.nintendo.net/ninja/wood_index.html?`.
+
+Questi riferimenti, insieme alle costanti di destinazione uShop,
+indicano una logica prevista **anche quando Inkay è presente**. È coerente
+con il test reale dell'utente: il vecchio plugin apre la pagina uShop
+senza modificare Inkay. Non è ancora una prova del preciso ordine degli
+hook o dell'effettiva compatibilità dei download.
+
+Scelta progettuale: **replicare solo la gestione necessaria della pagina
+dell'applet nel plugin zShop**, non i redirect di autenticazione/commerce
+o le patch IOSU. Non distribuire il vecchio binario.

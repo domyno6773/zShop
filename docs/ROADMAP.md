@@ -28,15 +28,16 @@
 - [ ] Rilevare `initial.oma` sulla console.
 - [ ] Verificare HOME, uscita dall'eShop e rimozione del plugin.
 
-## Blocco Pretendo — compatibilità eShop esclusiva: IN RICERCA
+## Vincolo Pretendo — IN RICERCA, SENZA MODIFICARE INKAY
 
-- [x] Riprodotto errore 377-0001 con Inkay attivo e zShop diagnostico passivo.
-- [x] Identificato redirect Inkay di initial.oma verso server Pretendo tramite patchEshop().
-- [x] Creato patch sperimentale build-time che salta SOLO patchEshop() su Inkay upstream pin.
-- [ ] Verificare build sperimentale e valutare integrazione con upstream (GPLv3).
-- [ ] Verificare su console che Pretendo resti attivo per amici/Miiverse/multiplayer.
-- [ ] Convalidare che le patch IOSU commerce già presenti in Inkay non interferiscano.
-- [ ] Portare una soluzione stabile e non invasiva: zShop eShop-only, senza disattivare Pretendo.
+- [x] Confermato su console: `newShop.wps` apre eShop alternativo con Inkay ufficiale attivo.
+- [x] Identificato redirect dell'applet da parte di Inkay tramite `patchEshop()`.
+- [x] Isolati nel vecchio binario marker `inkay-url`, `inkay-allowlist`, `nintendo-url`, `nintendo-allowlist`.
+- [x] Eliminato il ramo di sviluppo che ricompilava/modificava Inkay; non è parte della soluzione.
+- [ ] Verificare il punto e l'ordine effettivo dei redirect quando entrambi i plugin sono attivi.
+- [ ] Implementare nel solo zShop un redirect confinato al processo eShop, con opt-in e rollback.
+- [ ] Dimostrare su console: eShop alternativo funziona mentre amici, online e Miiverse Pretendo restano intatti.
+- [ ] Non toccare i servizi di autenticazione, IOSU, ticket, SSL o le impostazioni globali Inkay.
 
 ## Fase 1b — reindirizzamento dell'applet, dopo i test
 

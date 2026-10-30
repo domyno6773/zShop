@@ -4,23 +4,32 @@
 
 zShop è un progetto open-source per recuperare la navigazione del **Nintendo eShop originale Wii U**, usando l'applet Nintendo e il Wii U GamePad anziché sostituirli con una homebrew indipendente.
 
-## Compatibilità con Pretendo
+## Compatibilità con Pretendo: requisito vincolante
 
-**Nota del 30/10/2026:** con Inkay/Pretendo attivo, il plugin diagnostico
-v0.1.0 non impedisce l'errore `377-0001 — This eShop is not available on Pretendo`.
-Non è un difetto della compilazione: il codice ufficiale di Inkay reindirizza
-l'eShop a Pretendo, che non ospita il negozio.
+**Inkay deve rimanere esattamente quello ufficiale.** Nessun fork, modulo
+WMS alternativo, modifica ai file di Pretendo o disattivazione di Pretendo.
 
-Obiettivo di zShop: Pretendo deve rimanere attivo per amici, online e Miiverse;
-solo la pagina dell'eShop dovrà essere gestita da zShop. È allo studio
-un'opzione **eShop-only** per Inkay, non una disattivazione di Pretendo.
+Su Wii U 5.5.5E + Aroma, il vecchio `newShop.wps` apre l'eShop
+alternativo **con Inkay standard attivo**. La build diagnostica `zShop v0.1.0`,
+invece, non applica ancora redirect, quindi mostra l'errore Pretendo
+`377-0001 — This eShop is not available on Pretendo`.
 
-Non installare per ora i binari sperimentali di `compat/inkay`: i controlli
-di build non sostituiscono una prova in console e saltare la sola patch
-dell'applet non disfa i reindirizzamenti IOSU di Inkay.
+L'analisi statica di `newShop.wps` ha individuato riferimenti espliciti
+`inkay-url`, `inkay-allowlist`, `nintendo-url` e
+`nintendo-allowlist`, nonché il dominio `samurai.wup.shop.pretendo.cc`.
+Questo prova che il binario riconosce le due varianti degli URL; **non**
+dimostra ancora l'esatta sequenza delle patch in memoria.
 
-Vedi [analisi e compatibilità Inkay](compat/inkay/README.md) e
-[issue #2](https://github.com/domyno6773/zShop/issues/2).
+La soluzione deve essere autonoma e **limitata al processo eShop**.
+La compatibilità del negozio non deve richiedere il cambio globale della rete
+Pretendo né modifiche all'installazione Inkay.
+
+La precedente prova di compilazione di un Inkay modificato è **abbandonata**:
+i file sorgente e la workflow di quel fork sono stati rimossi da `main`.
+Non installare i vecchi artefatti della prova.
+
+Vedi [analisi compatibilità con Inkay](docs/INKAY_COMPATIBILITY.md)
+e [issue #2](https://github.com/domyno6773/zShop/issues/2).
 
 ## Cosa funziona già
 
