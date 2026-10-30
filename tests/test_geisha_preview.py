@@ -47,9 +47,12 @@ class GeishaPreviewTests(unittest.TestCase):
         text = page.decode("utf-8")
         self.assertIn("text/html", mime)
         self.assertIn("Historic eShop shell", text)
+        self.assertIn("/geisha/zshop-bridge.js", text)
+        self.assertEqual(text.count("<script"), 1)
+        self.assertNotIn("js/minified/boot.js", text)
         self.assertIn('href="css/main.css"', text)
         self.assertIn('name="zshop-geisha-mode"', text)
-        for blocked in ("<script", "onload=", "<iframe", "<form",
+        for blocked in ("onload=", "<iframe", "<form",
                         "javascript:", "https://remote.invalid"):
             with self.subTest(blocked=blocked):
                 self.assertNotIn(blocked, text)
@@ -106,7 +109,7 @@ class GeishaHttpIntegrationTests(GeishaPreviewTests):
         with urlopen(self.base + "/ninja/wood_index.html?version=1.0.0", timeout=3) as response:
             self.assertTrue(response.geturl().endswith("/geisha/index.html"))
             self.assertIn("Historic eShop shell", response.read().decode("utf-8"))
-            self.assertIn("script-src 'none'", response.headers["Content-Security-Policy"])
+            self.assertIn("script-src 'self'", response.headers["Content-Security-Policy"])
 
     def test_original_image_and_css_available(self):
         for path in ("/geisha/image.png", "/geisha/css/main.css"):

@@ -44,7 +44,9 @@ class GeishaHomeHydrationTest(unittest.TestCase):
             self.assertIn("always02_01.html", page)
             self.assertNotIn("Loading...", page)
             self.assertNotIn('data-isloaded="false"', page)
-            self.assertNotIn("<script", page)
+            self.assertEqual(page.count("<script"), 1)
+            self.assertIn("/geisha/zshop-bridge.js", page)
+            self.assertNotIn("js/minified/boot.js", page)
             self.assertIn("Demo &lt;script&gt;x&lt;/script&gt;", page)
             self.assertLess(page.index("Demo &lt;script&gt;"), page.index("Second demo"))
             self.assertEqual((geisha / "index.html").read_text(encoding="utf-8"),
@@ -76,7 +78,7 @@ class GeishaHomeHydrationTest(unittest.TestCase):
         for forbidden in (
             "registerTitleDownloadTask", "ticketDownloadSync",
             "ninja/ws/my", "href=\"money01_01.html\"",
-            "href=\"always01_01.html\"", "<script", "onclick=",
+            "href=\"always01_01.html\"", "onclick=",
         ):
             with self.subTest(forbidden=forbidden):
                 self.assertNotIn(forbidden, page)
