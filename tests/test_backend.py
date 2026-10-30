@@ -34,8 +34,8 @@ class BackendTest(unittest.TestCase):
 
     def test_applet_entrypoint(self):
         html = self.fetch("/ninja/wood_index.html")
-        self.assertIn("My Profile", html)
-        self.assertIn("lockHomeButtonMenu(false)", html)
+        self.assertIn("Il mio menu", html)
+        self.assertIn("/static/shop.js", html)
 
     def test_categories_differ(self):
         best = self.fetch("/ninja/wood_index.html?view=best")
@@ -53,7 +53,7 @@ class BackendTest(unittest.TestCase):
 
     def test_back_and_profile(self):
         html = self.fetch("/ninja/wood_index.html?view=profile")
-        self.assertIn("Back to Home", html)
+        self.assertIn("Torna alla Home", html)
         self.assertIn("view=home", html)
         self.assertIn("no Nintendo or Pretendo profile data", html)
 
