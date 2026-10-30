@@ -6,6 +6,16 @@ import re
 
 from geisha_preview_renderer import hydrate_index
 
+# Only audited JavaScript executed in read-only Geisha mode. The historical
+# boot.js is NOT served. This bridge only dismisses the native startup screen.
+SAFE_STARTUP_BRIDGE = b"""(function(){try{
+var b=window.wiiuBrowser;
+if(b){
+ if(typeof b.endStartUp==='function'){b.endStartUp(true);}
+ if(typeof b.lockHomeButtonMenu==='function'){b.lockHomeButtonMenu(false);}
+}
+}catch(ignored){}}());"""
+
 ARCHIVE_SUBDIR = Path("geisha_wup.cdn.nintendo.net/geisha-wup.cdn.nintendo.net/geisha")
 EXTENSIONS = {".html", ".htm", ".css", ".png", ".jpg", ".jpeg", ".gif",
               ".webp", ".bmp", ".ico", ".woff", ".woff2", ".ttf"}
@@ -41,6 +51,12 @@ def preview_html(data, name=None, catalog=()):
                   page, count=1)
     if name == "index.html":
         page = hydrate_index(page, catalog)
+    # The only script served is the small, audited applet startup bridge.
+    startup_tag = '<script src="/geisha/zshop-bridge.js"></script>'
+    if re.search(r"(?i)</body\s*>", page):
+        page = re.sub(r"(?i)</body\s*>", startup_tag + "</body>", page, count=1)
+    else:
+        page += startup_tag
     return page.encode("utf-8")
 
 
@@ -61,6 +77,8 @@ class GeishaArchive:
 
     def read(self, url_path):
         """Return (MIME, bytes) or None; reject traversals and executable scripts."""
+        if url_path == "/geisha/zshop-bridge.js":
+            return "application/javascript; charset=utf-8", SAFE_STARTUP_BRIDGE
         if not url_path.startswith("/geisha/"):
             return None
         name = unquote(url_path[len("/geisha/"):]).replace("\\", "/")
