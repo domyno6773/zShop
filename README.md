@@ -1,6 +1,6 @@
 # zShop — ripristino dell'esperienza eShop Wii U
 
-> **Stato: Fase 2 in sviluppo. Interfaccia eShop in stile Wii U sul backend LAN; zShop.wps v0.2.0-alpha e Inkay ufficiale rimangono invariati.**
+> **Stato: Fase 2 in ricerca. Collegamento all'applet originale funzionante; frontend originale Geisha non ancora recuperato.**
 
 zShop è un progetto open-source per recuperare la navigazione del **Nintendo eShop originale Wii U**, usando l'applet Nintendo e il Wii U GamePad anziché sostituirli con una homebrew indipendente.
 
@@ -37,41 +37,11 @@ Non installare i vecchi artefatti della prova.
 Vedi [analisi compatibilità con Inkay](docs/INKAY_COMPATIBILITY.md)
 e [issue #2](https://github.com/domyno6773/zShop/issues/2).
 
-## Fase 2 — Interfaccia Wii U eShop
+## Fase 2 — frontend originale, non una replica
 
-Il precedente frontend diagnostico è stato sostituito con una **prima iterazione**
-del negozio in stile Wii U eShop, mantenendo la stessa pagina iniziale
-`/ninja/wood_index.html` e lo stesso plugin `zShop.wps`.
+La precedente interfaccia personalizzata è stata rimossa da main perché non soddisfa il requisito. L'applet originale funziona già con zShop.wps v0.2.0-alpha e Inkay invariato. La vera UI eShop era erogata dal servizio remoto Geisha; finché non disponiamo di una copia completa e verificata di HTML/CSS/JS originali non possiamo affermare di averla ripristinata.
 
-La nuova struttura, compatibile con browser WebKit più vecchi, include:
-
-- Menu laterale fisso **Home / Il mio menu / Anteprima / Cerca / Indietro**.
-- Barra superiore con **Giochi Wii U / Classifiche / Novità / Ricerca**.
-- Home con selezioni, categorie e anteprime dei giochi.
-- Categorie funzionanti, ordinamento uscite/classifiche e ricerca lato server.
-- Schede software con metadati dimostrativi e pulsanti download disattivati.
-- Asset CSS e JavaScript interni al server, senza CDN esterne o framework.
-- Link di ritorno deterministici dalle schede, oltre alla navigazione nativa
-  che deve ancora essere misurata sulla console.
-- Nessun accesso ad account o servizi di licenza.
-
-**Per provare Fase 2 non serve sostituire il file WPS!** Dal PC, nella copia
-aggiornata della repository, interrompi il vecchio server e riavvialo con:
-
-```powershell
-python backend.py --host 0.0.0.0 --port 80
-```
-
-Il plugin già verificato continuerà a inoltrare l'eShop alla porta 80
-del PC sulla LAN. Non occorre cambiare l'IP salvato, né Inkay.
-
-Il frontend è ancora una **prima iterazione da verificare sul GamePad**:
-layout e colori prendono ispirazione da screenshot storici dell'eShop,
-ma non distribuiamo risorse grafiche Nintendo o repliche delle copertine.
-I titoli demo sono fittizi. Servono screenshot dal test su console per
-perfezionare leggibilità e comportamento B/HOME.
-
-Vedi [Piano e prove Fase 2](docs/PHASE2_UI.md).
+Documentazione: [Ricerca del frontend originale](docs/ORIGINAL_FRONTEND.md).
 
 ## Prima prova LAN v0.2.0-alpha
 
@@ -83,13 +53,13 @@ Vedi [Piano e prove Fase 2](docs/PHASE2_UI.md).
 3. Sul PC avvia `python backend.py --host 0.0.0.0 --port 80`.
 4. Sul Wii U GamePad, menu plugin: imposta l'IP **LAN privato** del PC
    e abilita il route eShop, disattivato per impostazione predefinita.
-5. Apri l'eShop originale e prova l'interfaccia nuova della Fase 2.
+5. Apri l'eShop originale e verifica la pagina diagnostica temporanea, non la UI Nintendo.
 
 Il backend contiene solo **titoli fittizi**; nessun download/installazione.
 
 ## Cosa funziona già
 
-- ✅ Backend LAN Python con nuova UI eShop, categorie, ricerca e schede demo (da verificare visivamente sul GamePad).
+- ✅ Backend LAN Python diagnostico: non è l'interfaccia originale Nintendo eShop.
 - ✅ Plugin WUPS **`plugin/zShop.wps`** compilabile da C++ con toolchain Wii U ufficiale.
 - ✅ Intercettazione **passiva** di `FSOpenFile` per riconoscere il caricamento di `vol/content/initial.oma`.
 - ✅ Tentativo di route DNS LAN opt-in, limitato all'eShop e al solo dominio dell'applet Inkay.

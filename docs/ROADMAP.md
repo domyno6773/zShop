@@ -50,17 +50,17 @@
 - [ ] Verificare i percorsi di navigazione e il recupero con HOME/B.
 - [ ] Se il hook non viene chiamato, indagare una seconda soluzione confinata al processo eShop senza toccare Inkay.
 
-## Fase 2 — esperienza eShop originale: PRIMA IMPLEMENTAZIONE
+## Fase 2 — vero frontend Geisha Nintendo: NON ANCORA RIPRISTINATO
 
-- [x] Prima interfaccia in stile Wii U eShop: rail laterale, navigazione superiore, layout schede software.
-- [x] Pagine Home, categorie, ricerca, dettaglio e profilo fittizio navigabili.
-- [x] CSS e JS con fallback per vecchio WebKit, senza framework o CDN esterne.
-- [x] Link espliciti per Back/Home, schede con ritorno alla categoria da cui si proviene.
-- [x] Nessun accesso ad account, acquisti, ticket o download.
-- [ ] Espandere il catalogo con metadati/immagini distribuibili legalmente e verificati.
-- [ ] Confrontare il rendering reale con screenshot originali su GamePad 854×480 e TV.
-- [ ] Verificare comportamento B / HOME; non assumere bridge nativi non documentati.
-- [ ] Iterare fino a una riproduzione visiva più fedele senza asset Nintendo redistribuiti.
+- [x] Verificata architettura originale Ninja → Geisha.
+- [x] Rimosso il precedente frontend inventato: contrario al requisito.
+- [x] Ripristinato il backend diagnostico LAN già funzionante.
+- [ ] Reperire un archivio completo e autentico di HTML/CSS/JS e risorse Geisha.
+- [ ] Verificare provenienza, diritti d'uso, integrità e dipendenze.
+- [ ] Implementare sul server locale l'erogazione dell'interfaccia originale, senza pubblicare asset proprietari non autorizzati.
+- [ ] Ricostruire le chiamate Ninja/Geisha non sensibili e verificare comandi e navigation GamePad.
+
+Vedi docs/ORIGINAL_FRONTEND.md. Nessuna ulteriore UI ispirata o mockup deve essere presentata come originale.
 
 ## Fase 3 — download autorizzati
 
