@@ -1,0 +1,39 @@
+name: Build Aroma diagnostic plugin
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'plugin/**'
+      - '.github/workflows/build-plugin.yml'
+  pull_request:
+    paths:
+      - 'plugin/**'
+      - '.github/workflows/build-plugin.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-plugin:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build pinned Wii U toolchain
+        run: docker build --file plugin/Dockerfile --tag zshop-wups-builder plugin
+      - name: Compile WUPS diagnostic
+        run: docker run --rm -v "${PWD}/plugin:/project" zshop-wups-builder make
+      - name: Check produced artifact
+        run: |
+          test -s plugin/zShop.wps
+          file plugin/zShop.wps
+          sha256sum plugin/zShop.wps
+      - name: Upload unsigned diagnostic WPS (NOT release)
+        uses: actions/upload-artifact@v4
+        with:
+          name: zShop-phase1-diagnostic-wps
+          path: plugin/zShop.wps
+          if-no-files-found: error
+          retention-days: 14
