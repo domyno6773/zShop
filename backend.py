@@ -227,9 +227,16 @@ def make_handler(catalog, geisha=None, *, diagnostics=None, entry='redirect',
                 self.send_header('Location', location)
             self.send_header("X-Content-Type-Options", "nosniff")
             if geisha is not None or self.route in ('diagnostic', 'bridge'):
+                # CSP blocks forms by default. Only the audited native HTML
+                # GET search uses a form, confined to the same LAN origin.
+                # The archived source forms are stripped from served HTML.
+                form_action = "'self'" if (
+                    geisha is not None and
+                    urlsplit(self.path).path == '/geisha/always02_01.html'
+                ) else "'none'"
                 self.send_header("Content-Security-Policy",
                                  "default-src 'self'; script-src 'self'; "
-                                 "connect-src 'none'; form-action 'none'; "
+                                 f"connect-src 'none'; form-action {form_action}; "
                                  "object-src 'none'; frame-src 'none'; "
                                  "img-src 'self' data:; style-src 'self' 'unsafe-inline'")
             self.end_headers()

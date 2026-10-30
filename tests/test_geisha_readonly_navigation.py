@@ -181,6 +181,11 @@ class ReadOnlyNavigationTest(unittest.TestCase):
             with urlopen(base + "/geisha/always02_01.html", timeout=3) as response:
                 search_page = response.read().decode("utf-8")
                 self.assertIn('method="get" action="shelf02_01.html"', search_page)
+                self.assertIn("form-action 'self'",
+                              response.headers["Content-Security-Policy"])
+            with urlopen(base + "/geisha/index.html", timeout=3) as response:
+                self.assertIn("form-action 'none'",
+                              response.headers["Content-Security-Policy"])
         finally:
             server.shutdown()
             thread.join(timeout=3)
