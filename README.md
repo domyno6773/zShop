@@ -1,6 +1,6 @@
 # zShop — ripristino dell'esperienza eShop Wii U
 
-> **Stato: sperimentale. Build v0.1.0 diagnostica compilata per Aroma. Non è ancora un negozio funzionante.**
+> **Stato: sperimentale. zShop v0.2.0-alpha in prova: reindirizzamento DNS locale per l'eShop originale con Inkay ufficiale. NON ancora un negozio completo.**
 
 zShop è un progetto open-source per recuperare la navigazione del **Nintendo eShop originale Wii U**, usando l'applet Nintendo e il Wii U GamePad anziché sostituirli con una homebrew indipendente.
 
@@ -10,9 +10,15 @@ zShop è un progetto open-source per recuperare la navigazione del **Nintendo eS
 WMS alternativo, modifica ai file di Pretendo o disattivazione di Pretendo.
 
 Su Wii U 5.5.5E + Aroma, il vecchio `newShop.wps` apre l'eShop
-alternativo **con Inkay standard attivo**. La build diagnostica `zShop v0.1.0`,
-invece, non applica ancora redirect, quindi mostra l'errore Pretendo
-`377-0001 — This eShop is not available on Pretendo`.
+alternativo **con Inkay standard attivo**. La vecchia build diagnostica `zShop v0.1.0` non applicava redirect e mostrava
+l'errore Pretendo `377-0001 — This eShop is not available on Pretendo`.
+
+La **nuova v0.2.0-alpha** tenta invece una strada meno invasiva: mentre Inkay
+ufficiale prepara l'applet, zShop intercetta **solo nel processo eShop** le
+risoluzioni DNS dell'host HTTP `samurai.wup.shop.pretendo.cc` e le invia
+all'IP privato del PC configurato nel menu Aroma. Non modifica URL in RAM,
+Inkay, certificati, servizi IOSU o account. L'efficacia dipende da come
+l'applet risolve il nome: è ancora da verificare su Wii U.
 
 L'analisi statica di `newShop.wps` ha individuato riferimenti espliciti
 `inkay-url`, `inkay-allowlist`, `nintendo-url` e
@@ -31,23 +37,39 @@ Non installare i vecchi artefatti della prova.
 Vedi [analisi compatibilità con Inkay](docs/INKAY_COMPATIBILITY.md)
 e [issue #2](https://github.com/domyno6773/zShop/issues/2).
 
+## Prima prova LAN v0.2.0-alpha
+
+**Guida completa:** [Collegamento a server locale e rollback](docs/PHASE1B_LAN_ROUTE.md).
+
+1. Installa l'artefatto sperimentale `zShop.wps` da
+   [GitHub Actions](https://github.com/domyno6773/zShop/actions/workflows/build-plugin.yml).
+2. Non modificare Inkay ufficiale; disattiva soltanto il vecchio `newShop.wps`.
+3. Sul PC avvia `python backend.py --host 0.0.0.0 --port 80`.
+4. Sul Wii U GamePad, menu plugin: imposta l'IP **LAN privato** del PC
+   e abilita il route eShop, disattivato per impostazione predefinita.
+5. Apri l'eShop originale e cerca la pagina di test zShop.
+   La grafica diagnostica non riproduce ancora l'eShop storico.
+
+Il backend contiene soltanto **cinque titoli fittizi**; nessun download/installazione.
+
 ## Cosa funziona già
 
 - ✅ Backend diagnostico locale in Python: categorie, ricerca, schede demo e navigazione di base (non ancora collegato alla Wii U).
 - ✅ Plugin WUPS **`plugin/zShop.wps`** compilabile da C++ con toolchain Wii U ufficiale.
 - ✅ Intercettazione **passiva** di `FSOpenFile` per riconoscere il caricamento di `vol/content/initial.oma`.
+- ✅ Tentativo di route DNS LAN opt-in, limitato all'eShop e al solo dominio dell'applet Inkay.
 - ✅ Interruttore nel menu Aroma, **disabilitato per impostazione predefinita**, con stato del rilevamento.
 - ✅ Test automatici Python e compilazione Docker nella CI di GitHub Actions.
-- ❌ Nessun reindirizzamento del catalogo nelle build correnti.
+- ⚠️ Reindirizzamento verso catalogo LAN implementato nel plugin, ancora senza test hardware.
 - ❌ Nessun download o installazione di titoli.
 
-Il plugin v0.1.0 **non modifica l'eShop**, i server di autenticazione Nintendo, la memoria IOSU o i certificati SSL. È concepito come prima prova di compatibilità sulla console.
+Il plugin v0.2.0-alpha può cambiare la destinazione DNS dell'eShop **solo dopo opt-in**, senza modificare Inkay, servizi di autenticazione, memoria IOSU o certificati SSL. La build v0.1.0 rimane il riferimento diagnostico precedente.
 
-## Scaricare la build diagnostica
+## Scaricare la build sperimentale
 
-Apri [GitHub Actions — Build Aroma diagnostic plugin](https://github.com/domyno6773/zShop/actions/workflows/build-plugin.yml), scegli una build riuscita e scarica l'artefatto **`zShop-phase1-diagnostic-wps`**. All'interno c'è il file `zShop.wps`.
+Apri [GitHub Actions — Build zShop Aroma plugin](https://github.com/domyno6773/zShop/actions/workflows/build-plugin.yml), scegli una build riuscita e scarica l'artefatto **`zShop-v0.2.0-inkay-stock-lan-alpha`**. All'interno c'è il file `zShop.wps`.
 
-Per istruzioni di installazione, verifica e rollback, leggi **[Fase 1 diagnostica](docs/PHASE1_DIAGNOSTIC.md)**.
+Per installazione, verifiche e rollback leggi **[Fase 1b — LAN](docs/PHASE1B_LAN_ROUTE.md)**. La vecchia [Fase 1 diagnostica](docs/PHASE1_DIAGNOSTIC.md) rimane come documentazione storica.
 
 ### Importante: non caricare due plugin contemporaneamente
 

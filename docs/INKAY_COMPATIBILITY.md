@@ -57,3 +57,20 @@ di GitHub Actions non devono essere installati.
 
 Non esiste ancora una build zShop che reindirizzi la pagina. La v0.1.0
 diagnostica rimane priva di questa funzione.
+
+## Implementazione alternativa v0.2.0-alpha (non ancora verificata su console)
+
+Un'altra strategia evita completamente la scrittura in RAM e l'interazione con
+l'ordine degli hook Inkay: conservare il suo URL di ingresso HTTP
+`http://samurai.wup.shop.pretendo.cc/ninja/wood_index.html?` e intercettare
+solamente le chiamate `getaddrinfo` e `gethostbyname` di quell'esatto nome
+nel processo **eShop**. Se abilitato e con IP LAN valido, il resolver WUPS
+restituisce l'IP del backend, lasciando intatto l'Host HTTP e la allowlist Inkay.
+
+**Limiti:** non sappiamo ancora se il motore browser dell'eShop attraversa gli
+hook DNS di nsysnet. La tecnica necessita di prova reale su firmware 5.5.5E.
+Se il browser usa un resolver diverso o cache persistente, può ancora comparire
+l'errore 377-0001. Il test non modifica Inkay, IOSU o certificati.
+
+Vedi [istruzioni LAN](PHASE1B_LAN_ROUTE.md). Il backend ascolta sulla porta
+**80** della LAN; nessuna configurazione del router deve renderlo pubblico.

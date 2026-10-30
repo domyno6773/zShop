@@ -39,13 +39,16 @@
 - [ ] Dimostrare su console: eShop alternativo funziona mentre amici, online e Miiverse Pretendo restano intatti.
 - [ ] Non toccare i servizi di autenticazione, IOSU, ticket, SSL o le impostazioni globali Inkay.
 
-## Fase 1b — reindirizzamento dell'applet, dopo i test
+## Fase 1b — DNS solo per applet con Inkay originale: IMPLEMENTATA; HARDWARE DA TESTARE
 
-- [ ] Studiare e validare l'API ContentRedirection su Aroma aggiornato.
-- [ ] Progettare una sorgente di pagina con destinazione locale esplicitamente impostata.
-- [ ] Introdurre l'opt-in al reindirizzamento mantenendolo OFF di default.
-- [ ] Limitare il reindirizzamento alla pagina applet, senza toccare autenticazione o CDN.
-- [ ] Verificare il rollback senza residui e l'assenza di interferenze con altri plugin.
+- [x] Individuata un'alternativa a ContentRedirection: hook mirati a getaddrinfo/gethostbyname per SOLO il processo eShop.
+- [x] Intercettato solo l'hostname HTTP dell'applet generato da Inkay ufficiale.
+- [x] Indirizzo IPv4 di backend configurabile nel menu Aroma e limitato a RFC1918.
+- [x] Route opt-in, OFF di default, nessun accesso ad account, ticket, IOSU o certificati.
+- [ ] Verificare che la Wii U utilizzi realmente getaddrinfo/gethostbyname per questo hostname.
+- [ ] Verificare che il backend PC su porta 80 si apra nel browser dell'eShop.
+- [ ] Verificare i percorsi di navigazione e il recupero con HOME/B.
+- [ ] Se il hook non viene chiamato, indagare una seconda soluzione confinata al processo eShop senza toccare Inkay.
 
 ## Fase 2 — esperienza eShop originale
 
