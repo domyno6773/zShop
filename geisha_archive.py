@@ -4,6 +4,8 @@ from urllib.parse import unquote
 import mimetypes
 import re
 
+from geisha_preview_renderer import hydrate_index
+
 ARCHIVE_SUBDIR = Path("geisha_wup.cdn.nintendo.net/geisha-wup.cdn.nintendo.net/geisha")
 EXTENSIONS = {".html", ".htm", ".css", ".png", ".jpg", ".jpeg", ".gif",
               ".webp", ".bmp", ".ico", ".woff", ".woff2", ".ttf"}
@@ -16,7 +18,7 @@ CSS_IMPORT = re.compile(r"(?is)@import\s+[^;]+;")
 CSS_REMOTE = re.compile(r"""(?is)url\(\s*['"]?(?:https?:|//)[^)]*\)""")
 
 
-def preview_html(data):
+def preview_html(data, name=None, catalog=()):
     """Preserve archived layout without enabling unreviewed console API calls."""
     page = data.decode("utf-8", errors="replace")
     page = SCRIPT_TAGS.sub("", page)
@@ -37,6 +39,8 @@ def preview_html(data):
     page = re.sub(r"(?i)<head([^>]*)>",
                   r'<head\1><meta name="zshop-geisha-mode" content="read-only-preview">',
                   page, count=1)
+    if name == "index.html":
+        page = hydrate_index(page, catalog)
     return page.encode("utf-8")
 
 
@@ -47,7 +51,8 @@ def preview_css(data):
 
 
 class GeishaArchive:
-    def __init__(self, directory):
+    def __init__(self, directory, catalog=()):
+        self.catalog = tuple(catalog)
         root = Path(directory).expanduser().resolve()
         choices = (root / ARCHIVE_SUBDIR, root / "geisha", root)
         self.root = next((p.resolve() for p in choices if (p / "index.html").is_file()), None)
@@ -71,7 +76,7 @@ class GeishaArchive:
             return None
         data = file.read_bytes()
         if file.suffix.lower() in (".html", ".htm"):
-            return "text/html; charset=utf-8", preview_html(data)
+            return "text/html; charset=utf-8", preview_html(data, name, self.catalog)
         if file.suffix.lower() == ".css":
             return "text/css; charset=utf-8", preview_css(data)
         return mimetypes.guess_type(str(file))[0] or "application/octet-stream", data

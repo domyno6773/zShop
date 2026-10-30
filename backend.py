@@ -179,7 +179,7 @@ def main():
                              "with all original JavaScript disabled")
     args = parser.parse_args()
     catalog = load_catalog(args.catalog)
-    geisha = GeishaArchive(args.geisha_root) if args.geisha_root else None
+    geisha = GeishaArchive(args.geisha_root, catalog) if args.geisha_root else None
     server = ThreadingHTTPServer((args.host, args.port),
                                  make_handler(catalog, geisha=geisha))
     print("Development only: http://%s:%s%s" %
