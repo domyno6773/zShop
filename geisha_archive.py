@@ -6,6 +6,7 @@ import re
 from hashlib import sha256
 
 from geisha_preview_renderer import hydrate_index
+from geisha_readonly_navigation import hydrate_search, hydrate_shelf
 
 # Only audited JavaScript executed in read-only Geisha mode. The historical
 # boot.js is NOT served. This bridge only dismisses the native startup screen.
@@ -24,7 +25,7 @@ CSS_REMOTE = re.compile(r"""(?is)url\(\s*['"]?(?:https?:|//)[^)]*\)""")
 
 
 def preview_html(data, name=None, catalog=(), *, css=True, native='all',
-                 direct=False, page_id='00000000'):
+                 direct=False, page_id='00000000', query=''):
     """Preserve archived layout without enabling unreviewed console API calls."""
     page = data.decode("utf-8", errors="replace")
     page = SCRIPT_TAGS.sub("", page)
@@ -47,6 +48,10 @@ def preview_html(data, name=None, catalog=(), *, css=True, native='all',
                   page, count=1)
     if name == "index.html":
         page = hydrate_index(page, catalog)
+    elif name == "always02_01.html":
+        page = hydrate_search(page)
+    elif name == "shelf02_01.html":
+        page = hydrate_shelf(page, catalog, query)
     if re.search(r'''(?i)\bid\s*=\s*["']wrapper["']''', page):
         # Home AND Charts use the boot.js visibility gate. Never rely on
         # disabled source scripts to reveal a read-only document.

@@ -193,7 +193,8 @@ def make_handler(catalog, geisha=None, *, diagnostics=None, entry='redirect',
                     return
                 self.page_id = token_hex(4) if parsed.path.endswith(('.html', '.htm')) else None
                 content = geisha.read(parsed.path, css=selected_css, native=selected_native,
-                                      page_id=self.page_id or '00000000')
+                                      page_id=self.page_id or '00000000',
+                                      query=params.get('freeword', params.get('q', ['']))[0][:50])
                 if content is not None:
                     mime, payload = content
                     self.reply(200, payload, mime)
