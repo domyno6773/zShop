@@ -58,6 +58,17 @@ Il test non utilizza account, certificati, ticket, acquisti o API native di inst
 
 Vedi [indagine e limiti tecnici](docs/ORIGINAL_FRONTEND.md).
 
+### Fix di `Loading...` della prima anteprima Geisha
+
+Corretto il mancato `endStartUp(true)` dell'applet e l'HTML originale
+con `#el-top` non inizializzato. Ora la pagina viene popolata **dal server**
+utilizzando le classi originali Geisha (`top-content`, `top-main`, `ft_navi`)
+e soltanto un piccolo bridge verificato; gli script originali non revisionati
+restano bloccati. Layout e assets storici provengono dalla copia **locale**.
+
+Resta una modalità **read-only con catalogo demo**, da provare sul GamePad;
+non è un negozio completo. [Dettagli e aggiornamento per Windows ZIP](docs/ORIGINAL_FRONTEND.md).
+
 ## Prima prova LAN v0.2.0-alpha
 
 **Guida completa:** [Collegamento a server locale e rollback](docs/PHASE1B_LAN_ROUTE.md).

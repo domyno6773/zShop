@@ -56,7 +56,9 @@
 - [x] Rimosso il precedente frontend inventato: contrario al requisito.
 - [x] Ripristinato il backend diagnostico LAN già funzionante.
 - [x] Individuata una raccolta pubblica con pagine Geisha originali e risorse, ma mescolate a file alterati; NON verificata come dump intatto.
-- [x] Prima modalità locale di sola lettura per verificare HTML/CSS/immagini in possesso dell'utente, senza eseguire JS.
+- [x] Anteprima Geisha locale read-only: template della Home e menu originale renderizzati lato server con catalogo demo, asset e CSS storici.
+- [x] Corretto infinito Loading iniziale: inserimento contenuti in #el-top e bridge JS che chiama endStartUp(true), senza codice degli archivi.
+- [ ] Verificare sul GamePad che lo splash nativo si chiuda e il menu Geisha statico venga mostrato correttamente.
 - [ ] Separare rigorosamente gli script originali dai mock/sostituzioni del progetto di terzi.
 - [ ] Reperire e convalidare un archivio integro di HTML/CSS/JS Geisha.
 - [ ] Verificare provenienza, diritti d'uso, integrità e dipendenze.

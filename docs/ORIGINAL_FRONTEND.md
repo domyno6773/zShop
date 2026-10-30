@@ -75,3 +75,28 @@ Il vecchio Geisha si basava su JavaScript per comporre i suoi scaffali; **senza 
 5. Per ripristinare la pagina diagnostica, riavvia il backend senza `--geisha-root`.
 
 Questa è una **anteprima tecnica, non il recupero completo dell'eShop**. La possibilità di pubblicare le risorse originali, la loro autenticità e il funzionamento delle API commerciali sono ancora da verificare.
+
+### Correzione del caricamento infinito (anteprima Geisha)
+
+La prima anteprima lasciava l'eShop sulla schermata di caricamento per **due** ragioni:
+
+1. Il sorgente storico `index.html` mostra `Loading...` fino a che l'originale JavaScript popola `#el-top`; nella modalità di sola lettura lo script è correttamente bloccato.
+2. Il vecchio backend diagnostico invocava `wiiuBrowser.endStartUp(true)`; l'anteprima Geisha inizialmente non effettuava più questa chiamata di chiusura del caricamento nativo.
+
+zShop ora usa le **classi originali dei template HTML Geisha** per renderizzare staticamente il contenitore `#el-top` e il menu `#ft_navi` con dati di prova locali. Inoltre serve un unico script piccolo, verificabile, in `/geisha/zshop-bridge.js`, che chiama soltanto `wiiuBrowser.endStartUp(true)` e `wiiuBrowser.lockHomeButtonMenu(false)`. Gli script storici non ancora revisionati, incluse le funzioni di acquisto/download e i mock dell'archivio terzo, restano disabilitati.
+
+**Non è un ripristino completo:** conserva struttura e CSS originali ma usa solo dati dimostrativi; ricerca e altri flussi JS non sono ancora ripristinati. Il comportamento effettivo sulla Wii U deve ancora essere confermato. La nuova unit test include una regressione specifica contro il placeholder `Loading...`.
+
+#### Aggiornare un'installazione Windows scaricata come ZIP
+
+Se hai già l'archivio Geisha nella cartella `zShop-main`, non devi riscaricarlo. Dalla cartella `zShop-main` in PowerShell puoi aggiornare questi tre **soli file di codice zShop**:
+
+```powershell
+$base = 'https://raw.githubusercontent.com/domyno6773/zShop/main'
+Invoke-WebRequest "$base/backend.py" -OutFile '.\backend.py'
+Invoke-WebRequest "$base/geisha_archive.py" -OutFile '.\geisha_archive.py'
+Invoke-WebRequest "$base/geisha_preview_renderer.py" -OutFile '.\geisha_preview_renderer.py'
+python backend.py --host 0.0.0.0 --port 80 --geisha-root '.\Greeeeen-lol.github.io-main'
+```
+
+Prima dell'ultimo comando premi `Ctrl+C` nella finestra che esegue ancora il vecchio Python. Non cambiare `zShop.wps`, Inkay o l'IP locale del Wii U.
