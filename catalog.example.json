@@ -43,6 +43,78 @@
       "description": "Test categoria Mario.",
       "release": "2026-09-03",
       "popularity": 7
+    },
+    {
+      "id": "demo-forest",
+      "name": "Foresta di Vetro",
+      "category": "adventure",
+      "description": "Un piccolo viaggio tra boschi immaginari.",
+      "release": "2026-10-04",
+      "popularity": 6
+    },
+    {
+      "id": "demo-orbit",
+      "name": "Orbita Perduta",
+      "category": "action",
+      "description": "Demo di una scheda software d'azione.",
+      "release": "2026-10-15",
+      "popularity": 12
+    },
+    {
+      "id": "demo-stars",
+      "name": "Stelle di Carta",
+      "category": "puzzle",
+      "description": "Un rompicapo illustrato di prova.",
+      "release": "2026-10-21",
+      "popularity": 4
+    },
+    {
+      "id": "demo-waves",
+      "name": "Onde Lontane",
+      "category": "adventure",
+      "description": "Esplora le coste di un mondo fantastico.",
+      "release": "2026-10-10",
+      "popularity": 10
+    },
+    {
+      "id": "demo-sprint",
+      "name": "Sprint Zero",
+      "category": "race",
+      "description": "Demo di un elenco con giochi di corse.",
+      "release": "2026-09-30",
+      "popularity": 8
+    },
+    {
+      "id": "demo-lab",
+      "name": "Laboratorio 8-bit",
+      "category": "retro",
+      "description": "Anteprima della categoria classici.",
+      "release": "2026-10-18",
+      "popularity": 9
+    },
+    {
+      "id": "demo-leaves",
+      "name": "Quattro Stagioni",
+      "category": "platform",
+      "description": "Piattaforme colorate e livelli immaginari.",
+      "release": "2026-10-23",
+      "popularity": 11
+    },
+    {
+      "id": "demo-stadium",
+      "name": "Stadio di Quartiere",
+      "category": "sports",
+      "description": "Un gioco sportivo completamente fittizio.",
+      "release": "2026-10-25",
+      "popularity": 5
+    },
+    {
+      "id": "demo-mario-2",
+      "name": "Mario Games - demo 2",
+      "category": "mario",
+      "description": "Segnaposto della categoria Mario; non un prodotto Nintendo.",
+      "release": "2026-10-08",
+      "popularity": 4
     }
   ]
 }
